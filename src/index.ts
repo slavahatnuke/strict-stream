@@ -93,7 +93,7 @@ async function* sequence(size: number): ITypedStream<number> {
 
 async function app() {
     let idx = 0;
-    const x = Pipe(sequence(4e6))
+    const x = Pipe(sequence(3))
         .Then(map((x) => x + 10))
         // .Then(tap((x) => console.log(x)))
         .Then(filter((x) => x > 1))
