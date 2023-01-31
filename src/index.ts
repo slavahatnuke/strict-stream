@@ -1,11 +1,13 @@
 import './polyfill';
 
 
-export type TypedStream<Type> = AsyncIterable<Type>;
-export type TypedMapper<Input, Output> = (stream: TypedStream<Input>) => TypedStream<Output>;
+export type ITypedStream<Type> = AsyncIterable<Type>;
+export type ITypedMapper<Input, Output> = (stream: ITypedStream<Input>) => ITypedStream<Output>;
 
-export type TypedPipe<Input> = TypedStream<Input> & {
-    Then<Output>(mapper: TypedMapper<Input, Output>): TypedPipe<Output>
+export type ITypedIterator<Type> = AsyncIterator<Type>;
+
+export type TypedStreamOf<Input> = ITypedStream<Input> & {
+    Then<Output>(mapper: ITypedMapper<Input, Output>): TypedStreamOf<Output>
 };
 
 const ok = (ok: any, error: string) => {
@@ -14,36 +16,29 @@ const ok = (ok: any, error: string) => {
     }
 }
 
-type TypedIterator<Type> = AsyncIterator<Type>;
-
-function streamToIterator<Type>(stream: TypedStream<Type>): TypedIterator<Type> {
+function streamToIterator<Type>(stream: ITypedStream<Type>): ITypedIterator<Type> {
     return stream[Symbol.asyncIterator]();
 }
 
-function iteratorFactoryToStream<Type>(iteratorFactory: () => TypedIterator<Type>): TypedStream<Type> {
+function iteratorFactoryToStream<Type>(iteratorFactory: () => ITypedIterator<Type>): ITypedStream<Type> {
     return {
         [Symbol.asyncIterator]: iteratorFactory,
     };
 }
 
-export function Pipe<Input>(stream: TypedStream<Input>): TypedPipe<Input> {
+export function Pipe<Input>(stream: ITypedStream<Input>): TypedStreamOf<Input> {
     ok(stream[Symbol.asyncIterator], 'No async iterator in stream')
 
     return {
         [Symbol.asyncIterator]: () => streamToIterator(stream),
-        Then: <Output>(mapper: TypedMapper<Input, Output>) => {
+        Then<Output>(mapper: ITypedMapper<Input, Output>): TypedStreamOf<Output> {
             return Pipe(iteratorFactoryToStream(() => streamToIterator(mapper(stream))))
-        },
+        }
     }
 }
 
-async function* foo(): TypedStream<number> {
-    yield await 1;
-    yield await 2;
-}
 
-
-async function run<T extends any>(stream: TypedStream<T>): Promise<T | undefined> {
+async function run<T extends any>(stream: ITypedStream<T>): Promise<T | undefined> {
     let value: T | undefined = undefined;
     for await (const record of stream) {
         value = record
@@ -51,50 +46,65 @@ async function run<T extends any>(stream: TypedStream<T>): Promise<T | undefined
     return value
 }
 
-type MaybeAsync<Type> = Type | Promise<Type>;
+export type MaybeAsyncType<Type> = Type | Promise<Type>;
 
-function map<Input, Output>(mapper: (input: Input) => MaybeAsync<Output>): TypedMapper<Input, Output> {
-    return (inputStream) => {
-        async function* mappedStream(): TypedStream<Output> {
+export type ITransformTypedStream<Input, Output> = (input: ITypedStream<Input>) => () => ITypedStream<Output>
+
+function transformStream<Input, Output>(transformer: ITransformTypedStream<Input, Output>): ITypedMapper<Input, Output> {
+    return (input: ITypedStream<Input>) => transformer(input)()
+}
+
+function map<Input, Output>(mapper: (input: Input) => MaybeAsyncType<Output>): ITypedMapper<Input, Output> {
+    return transformStream((inputStream) => {
+        return async function* mappedStream(): ITypedStream<Output> {
             for await (const record of inputStream) {
                 yield await mapper(record)
             }
         }
-
-        return mappedStream();
-    };
+    });
 }
 
-function tap<Input>(tapper: (input: Input) => MaybeAsync<any>) {
-    return map<Input, Input>(async (input) => {
-        await tapper(input)
+function tap<Input>(fn: (input: Input) => MaybeAsyncType<any>): ITypedMapper<Input, Input> {
+    return map<Input, Input>(async (input): Promise<Input> => {
+        await fn(input)
         return input
     })
 }
 
 
-function filter<Input>(condition: (input: Input) => MaybeAsync<boolean | undefined | null>): TypedMapper<Input, Input> {
-    return (input) => {
-        async function* filtered(): TypedStream<Input> {
-            for await (const record of input) {
+function filter<Input>(condition: (input: Input) => MaybeAsyncType<boolean | undefined | null>): ITypedMapper<Input, Input> {
+    return transformStream((inputStream) => {
+        return async function* filtered(): ITypedStream<Input> {
+            for await (const record of inputStream) {
                 const ok = await condition(record);
                 if (ok) {
                     yield record
                 }
             }
         }
+    });
+}
 
-        return filtered();
-    };
+async function* sequence(size: number): ITypedStream<number> {
+    for (let i = 0; i < size; i++) {
+        yield i;
+    }
 }
 
 async function app() {
-    const x = Pipe(foo())
-        .Then(tap(console.log))
+    let idx = 0;
+    const x = Pipe(sequence(4e6))
+        .Then(map((x) => x + 10))
+        // .Then(tap((x) => console.log(x)))
         .Then(filter((x) => x > 1))
         .Then(map((a): { name: string } => ({name: String(a)})))
         .Then(map((x) => ({...x, ok: true})))
-        .Then(tap(console.log));
+        .Then(tap((x) => {
+            idx++;
+            if (idx % 100000 === 0) {
+                console.log(x)
+            }
+        }));
 
     await run(x)
 }
