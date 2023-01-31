@@ -55,11 +55,9 @@ function transformStream<Input, Output>(transformer: ITransformTypedStream<Input
 }
 
 function map<Input, Output>(mapper: (input: Input) => MaybeAsyncType<Output>): ITypedMapper<Input, Output> {
-    return transformStream((inputStream) => {
-        return async function* mappedStream(): ITypedStream<Output> {
-            for await (const record of inputStream) {
-                yield await mapper(record)
-            }
+    return transformStream((inputStream) => async function* mappedStream(): ITypedStream<Output> {
+        for await (const record of inputStream) {
+            yield await mapper(record)
         }
     });
 }
@@ -73,13 +71,10 @@ function tap<Input>(fn: (input: Input) => MaybeAsyncType<any>): ITypedMapper<Inp
 
 
 function filter<Input>(condition: (input: Input) => MaybeAsyncType<boolean | undefined | null>): ITypedMapper<Input, Input> {
-    return transformStream((inputStream) => {
-        return async function* filtered(): ITypedStream<Input> {
-            for await (const record of inputStream) {
-                const ok = await condition(record);
-                if (ok) {
-                    yield record
-                }
+    return transformStream((inputStream) => async function* filtered(): ITypedStream<Input> {
+        for await (const record of inputStream) {
+            if (await condition(record)) {
+                yield record
             }
         }
     });
@@ -95,11 +90,12 @@ async function app() {
     let idx = 0;
     const x = Pipe(sequence(3))
         .Then(map((x) => x + 10))
-        // .Then(tap((x) => console.log(x)))
+        .Then(tap((x) => console.log(x)))
         .Then(filter((x) => x > 1))
         .Then(map((a): { name: string } => ({name: String(a)})))
         .Then(map((x) => ({...x, ok: true})))
         .Then(tap((x) => {
+            console.log(x)
             idx++;
             if (idx % 100000 === 0) {
                 console.log(x)
