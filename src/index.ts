@@ -85,15 +85,15 @@ function batch<Input>(size: number): ITypedMapper<Input, Input[]> {
 
 function flat<Type>(): ITypedMapper<Type | Type[] | ITypedStream<Type>, Type> {
     return transformStream((inputStream) => async function* flatStream(): ITypedStream<Type> {
-        for await (const items of inputStream) {
-            if(items instanceof Object && (
-                Array.isArray(items) || Symbol.iterator in items || Symbol.asyncIterator in items
+        for await (const record of inputStream) {
+            if(record instanceof Object && (
+                Array.isArray(record) || Symbol.iterator in record || Symbol.asyncIterator in record
             )) {
-                for await (const element of items) {
+                for await (const element of record) {
                     yield element
                 }
             } else {
-                yield items
+                yield record
             }
         }
     });
@@ -135,7 +135,7 @@ async function app() {
         .Then(batch(2))
         .Then(tap((x) => console.log(x)))
         .Then(flat())
-        .Then(map((x) => [x, x, x]))
+        .Then(map((x) => [x,x,x]))
         .Then(flat())
         .Then(tap((x) => {
             console.log('>>>', x)
