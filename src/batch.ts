@@ -1,4 +1,4 @@
-import {TypedStream, TypedStreamMapper} from "./type";
+import {TypedStream, TypedStreamMapper} from "./index";
 
 export function batch<Input>(size: number): TypedStreamMapper<Input, Input[]> {
     let batched: Input[] = [];

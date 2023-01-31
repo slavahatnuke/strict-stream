@@ -1,4 +1,4 @@
-import {TypedMaybeAsync, TypedStream, TypedStreamMapper} from "./type";
+import {TypedMaybeAsync, TypedStream, TypedStreamMapper} from "./index";
 
 export function filter<Input>(condition: (input: Input) => TypedMaybeAsync<boolean | undefined | null>): TypedStreamMapper<Input, Input> {
     return (inputStream) => (async function* filtered(): TypedStream<Input> {

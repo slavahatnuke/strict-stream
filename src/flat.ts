@@ -1,4 +1,4 @@
-import {TypedStream, TypedStreamMapper} from "./type";
+import {TypedStream, TypedStreamMapper} from "./index";
 
 export function flat<Type>(): TypedStreamMapper<Type | Type[] | TypedStream<Type>, Type> {
     return (inputStream) => (async function* flatStream(): TypedStream<Type> {

@@ -4,11 +4,12 @@ import {tap} from "./tap";
 import {filter} from "./filter";
 import {batch} from "./batch";
 import {flat} from "./flat";
-import {of, pull, run} from "./index";
+import {pull, run} from "./index";
+import {from} from "./from";
 
 export async function app() {
     let idx = 0;
-    const x = of(sequence(5))
+    const x = from(sequence(5))
         .pipe(map((x) => x + 10))
         .pipe(tap((x) => console.log(x)))
         .pipe(filter((x) => x > 1))

@@ -1,42 +1,23 @@
-import './polyfill';
-import {TypedStream, TypedStreamLike, TypedStreamMapper, TypedStreamOf} from "./type";
+// types
+export type TypedStream<Type> = AsyncIterable<Type>;
+export type TypedStreamOf<Input> = TypedStream<Input> & {
+    pipe<Output>(mapper: TypedStreamMapper<Input, Output>): TypedStreamOf<Output>
+};
+export type TypedStreamLike<Type> = AsyncIterable<Type> | Iterable<Type> | Type[];
+export type TypedStreamMapper<Input, Output> = (stream: TypedStream<Input>) => TypedStream<Output>;
+export type TypedMaybeAsync<Type> = Type | Promise<Type>;
 
-
-export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStream<Input> {
-    if (!((Symbol.asyncIterator in stream) || (Symbol.iterator in stream))) {
-        throw new Error('No iterator in stream')
-    }
-
-    if (Symbol.asyncIterator in stream) {
-        return stream
-    } else if (Symbol.iterator in stream) {
-        return {
-            [Symbol.asyncIterator]: () => {
-                const syncIterator = stream[Symbol.iterator]();
-                return {
-                    next: async () => syncIterator.next()
-                }
-            },
-        }
-    } else {
-        throw new Error(`Impossible to make a stream, got ${typeof stream}`)
-    }
-}
-
-export function Of<Input>(inputStream: TypedStream<Input>) {
+// of
+export function of<Input>(inputStream: TypedStream<Input>) {
     return {
         [Symbol.asyncIterator]: () => inputStream[Symbol.asyncIterator](),
         pipe<Output>(mapper: TypedStreamMapper<Input, Output>): TypedStreamOf<Output> {
-            return Of(mapper(inputStream))
+            return of(mapper(inputStream))
         }
     }
 }
 
-export function of<Input>(stream: TypedStreamLike<Input>): TypedStreamOf<Input> {
-    return Of(toTypedStream<Input>(stream));
-}
-
-
+// run | pull
 export async function run<T extends any>(stream: TypedStream<T>): Promise<T | undefined> {
     let value: T | undefined = undefined;
     for await (const record of stream) {

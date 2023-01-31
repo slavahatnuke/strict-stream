@@ -1,5 +1,5 @@
 import {map} from "./map";
-import {TypedMaybeAsync, TypedStreamMapper} from "./type";
+import {TypedMaybeAsync, TypedStreamMapper} from "./index";
 
 export function tap<Input>(fn: (input: Input) => TypedMaybeAsync<any>): TypedStreamMapper<Input, Input> {
     return map<Input, Input>(async (input): Promise<Input> => {

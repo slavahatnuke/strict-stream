@@ -1,4 +1,4 @@
-import {TypedMaybeAsync, TypedStream, TypedStreamMapper} from "./type";
+import {TypedMaybeAsync, TypedStream, TypedStreamMapper} from "./index";
 
 export function map<Input, Output>(mapper: (input: Input) => TypedMaybeAsync<Output>): TypedStreamMapper<Input, Output> {
     return (inputStream) => (async function* mappedStream(): TypedStream<Output> {
