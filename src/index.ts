@@ -62,6 +62,43 @@ function map<Input, Output>(mapper: (input: Input) => MaybeAsyncType<Output>): I
     });
 }
 
+function batch<Input>(size: number): ITypedMapper<Input, Input[]> {
+    let batched: Input[] = [];
+    return transformStream((inputStream) => async function* batchedStream(): ITypedStream<Input[]> {
+        for await (const record of inputStream) {
+            batched.push(record);
+
+            if(batched.length >= size) {
+                const toEmit = batched;
+                batched = [];
+                yield toEmit;
+            }
+        }
+
+        if(batched.length) {
+            const toEmit = batched;
+            batched = [];
+            yield toEmit;
+        }
+    });
+}
+
+function flat<Type>(): ITypedMapper<Type | Type[] | ITypedStream<Type>, Type> {
+    return transformStream((inputStream) => async function* flatStream(): ITypedStream<Type> {
+        for await (const items of inputStream) {
+            if(items instanceof Object && (
+                Array.isArray(items) || Symbol.iterator in items || Symbol.asyncIterator in items
+            )) {
+                for await (const element of items) {
+                    yield element
+                }
+            } else {
+                yield items
+            }
+        }
+    });
+}
+
 function tap<Input>(fn: (input: Input) => MaybeAsyncType<any>): ITypedMapper<Input, Input> {
     return map<Input, Input>(async (input): Promise<Input> => {
         await fn(input)
@@ -94,8 +131,14 @@ async function app() {
         .Then(filter((x) => x > 1))
         .Then(map((a): { name: string } => ({name: String(a)})))
         .Then(map((x) => ({...x, ok: true})))
+        .Then(tap((x) => console.log(x)))
+        .Then(batch(2))
+        .Then(tap((x) => console.log(x)))
+        .Then(flat())
+        .Then(map((x) => [x, x, x]))
+        .Then(flat())
         .Then(tap((x) => {
-            console.log(x)
+            console.log('>>>', x)
             idx++;
             if (idx % 100000 === 0) {
                 console.log(x)
