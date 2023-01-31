@@ -8,6 +8,10 @@ export type TypedStreamLike<Type> = AsyncIterable<Type> | Iterable<Type> | Type[
 export type TypedStreamMapper<Input, Output> = (stream: TypedStream<Input>) => TypedStream<Output>;
 export type TypedMaybeAsync<Type> = Type | Promise<Type>;
 
+export type TypedStreamPiper<In, Out> = TypedStreamMapper<In, Out> & {
+    pipe<Output>(mapper: TypedStreamMapper<Out, Output>): TypedStreamPiper<In, Output>
+}
+
 // of
 export function of<Input>(inputStream: TypedStream<Input>): TypedStreamOf<Input> {
     return {
@@ -18,11 +22,8 @@ export function of<Input>(inputStream: TypedStream<Input>): TypedStreamOf<Input>
     }
 }
 
-type IPipe<In, Out> = TypedStreamMapper<In, Out> & {
-    pipe<Output>(mapper: TypedStreamMapper<Out, Output>): IPipe<In, Output>
-}
 
-export function pipe<In, Out>(mapper: TypedStreamMapper<In, Out>): IPipe<In, Out> {
+export function pipe<In, Out>(mapper: TypedStreamMapper<In, Out>): TypedStreamPiper<In, Out> {
     const streamMapper: TypedStreamMapper<In, Out> = (input: TypedStream<In>) => mapper(input)
     // @ts-ignore
     streamMapper.pipe = <Output>(mapper: TypedStreamMapper<Out, Output>) => {
