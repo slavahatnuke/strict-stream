@@ -3,21 +3,30 @@ import {map} from "./map";
 import {tap} from "./tap";
 import {batch} from "./batch";
 import {flat} from "./flat";
-import {pull} from "./index";
+import {pipe, pull} from "./index";
 import {from} from "./from";
+import {filter} from "./filter";
 
 export async function app() {
     let idx = 0;
+    const f = pipe(
+        filter((x: number) => x > 1)
+    )
+        .pipe(map(String))
+
     const x = from(sequence(5))
         .pipe(map((x) => x + 10))
         .pipe(tap((x) => console.log(x)))
         // .pipe(map(String))
-        // .pipe(
-        //     pipe(
-        //         filter((x) => x > 1)
-        //     )
-        //     // .pipe(filter((x) => x > 1))
-        // )
+        .pipe(
+            pipe(
+                map((x: number) => String(x))
+            )
+                .pipe(map((x) => String(x)))
+                .pipe(map((x) => parseInt(x)))
+                .pipe(map((x) => 200 + x))
+                .pipe(map((x) => String(x)))
+        )
         .pipe(map((a): { name: string } => ({name: String(a)})))
         .pipe(map((x) => ({...x, ok: true})))
         .pipe(tap((x) => console.log(x)))

@@ -18,17 +18,22 @@ export function of<Input>(inputStream: TypedStream<Input>): TypedStreamOf<Input>
     }
 }
 
-// type IPipe<CurrentInput, CurrentOutput> = TypedStreamMapper<CurrentInput, CurrentOutput> & {
-//     pipe<NextOutput>(mapper: TypedStreamMapper<CurrentOutput, NextOutput>): IPipe<CurrentOutput, NextOutput>
-// }
-//
-// export function pipe<In, Out>(mapper: TypedStreamMapper<In, Out>): IPipe<In, Out> {
-//     const streamMapper: IPipe<In, Out> = ((input: TypedStream<In>) => mapper(input)) as IPipe<In, Out>;
-//     // @ts-ignore
-//     streamMapper.pipe = <Output>(mapper: TypedStreamMapper<Out, Output>) => mapper
-//
-//     return streamMapper;
-// }
+type IPipe<In, Out> = TypedStreamMapper<In, Out> & {
+    pipe<Output>(mapper: TypedStreamMapper<Out, Output>): IPipe<In, Output>
+}
+
+export function pipe<In, Out>(mapper: TypedStreamMapper<In, Out>): IPipe<In, Out> {
+    const streamMapper: TypedStreamMapper<In, Out> = (input: TypedStream<In>) => mapper(input)
+    // @ts-ignore
+    streamMapper.pipe = <Output>(mapper: TypedStreamMapper<Out, Output>) => {
+        return pipe<In, Output>((input: TypedStream<In>) => {
+            const nextStream = streamMapper(input);
+            return mapper(nextStream)
+        })
+    }
+    // @ts-ignore
+    return streamMapper;
+}
 
 // run | pull
 export async function run<Type extends any, Default extends any = undefined>(stream: TypedStream<Type>, defaultValue = undefined as Default): Promise<Type | Default> {
