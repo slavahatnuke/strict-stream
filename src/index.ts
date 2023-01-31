@@ -1,44 +1,43 @@
 import './polyfill';
+import {TypedStream, TypedStreamLike, TypedStreamMapper, TypedStreamOf} from "./type";
 
 
-export type ITypedStream<Type> = AsyncIterable<Type>;
-export type ITypedMapper<Input, Output> = (stream: ITypedStream<Input>) => ITypedStream<Output>;
+export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStream<Input> {
+    if (!((Symbol.asyncIterator in stream) || (Symbol.iterator in stream))) {
+        throw new Error('No iterator in stream')
+    }
 
-export type ITypedIterator<Type> = AsyncIterator<Type>;
-
-export type TypedStreamOf<Input> = ITypedStream<Input> & {
-    Then<Output>(mapper: ITypedMapper<Input, Output>): TypedStreamOf<Output>
-};
-
-const ok = (ok: any, error: string) => {
-    if (!ok) {
-        throw new Error(error)
+    if (Symbol.asyncIterator in stream) {
+        return stream
+    } else if (Symbol.iterator in stream) {
+        return {
+            [Symbol.asyncIterator]: () => {
+                const syncIterator = stream[Symbol.iterator]();
+                return {
+                    next: async () => syncIterator.next()
+                }
+            },
+        }
+    } else {
+        throw new Error(`Impossible to make a stream, got ${typeof stream}`)
     }
 }
 
-function streamToIterator<Type>(stream: ITypedStream<Type>): ITypedIterator<Type> {
-    return stream[Symbol.asyncIterator]();
-}
-
-function iteratorFactoryToStream<Type>(iteratorFactory: () => ITypedIterator<Type>): ITypedStream<Type> {
+export function Of<Input>(inputStream: TypedStream<Input>) {
     return {
-        [Symbol.asyncIterator]: iteratorFactory,
-    };
-}
-
-export function Pipe<Input>(stream: ITypedStream<Input>): TypedStreamOf<Input> {
-    ok(stream[Symbol.asyncIterator], 'No async iterator in stream')
-
-    return {
-        [Symbol.asyncIterator]: () => streamToIterator(stream),
-        Then<Output>(mapper: ITypedMapper<Input, Output>): TypedStreamOf<Output> {
-            return Pipe(iteratorFactoryToStream(() => streamToIterator(mapper(stream))))
+        [Symbol.asyncIterator]: () => inputStream[Symbol.asyncIterator](),
+        pipe<Output>(mapper: TypedStreamMapper<Input, Output>): TypedStreamOf<Output> {
+            return Of(mapper(inputStream))
         }
     }
 }
 
+export function of<Input>(stream: TypedStreamLike<Input>): TypedStreamOf<Input> {
+    return Of(toTypedStream<Input>(stream));
+}
 
-async function run<T extends any>(stream: ITypedStream<T>): Promise<T | undefined> {
+
+export async function run<T extends any>(stream: TypedStream<T>): Promise<T | undefined> {
     let value: T | undefined = undefined;
     for await (const record of stream) {
         value = record
@@ -46,106 +45,5 @@ async function run<T extends any>(stream: ITypedStream<T>): Promise<T | undefine
     return value
 }
 
-export type MaybeAsyncType<Type> = Type | Promise<Type>;
+export const pull = run
 
-export type ITransformTypedStream<Input, Output> = (input: ITypedStream<Input>) => () => ITypedStream<Output>
-
-function transformStream<Input, Output>(transformer: ITransformTypedStream<Input, Output>): ITypedMapper<Input, Output> {
-    return (input: ITypedStream<Input>) => transformer(input)()
-}
-
-function map<Input, Output>(mapper: (input: Input) => MaybeAsyncType<Output>): ITypedMapper<Input, Output> {
-    return transformStream((inputStream) => async function* mappedStream(): ITypedStream<Output> {
-        for await (const record of inputStream) {
-            yield await mapper(record)
-        }
-    });
-}
-
-function batch<Input>(size: number): ITypedMapper<Input, Input[]> {
-    let batched: Input[] = [];
-    return transformStream((inputStream) => async function* batchedStream(): ITypedStream<Input[]> {
-        for await (const record of inputStream) {
-            batched.push(record);
-
-            if(batched.length >= size) {
-                const toEmit = batched;
-                batched = [];
-                yield toEmit;
-            }
-        }
-
-        if(batched.length) {
-            const toEmit = batched;
-            batched = [];
-            yield toEmit;
-        }
-    });
-}
-
-function flat<Type>(): ITypedMapper<Type | Type[] | ITypedStream<Type>, Type> {
-    return transformStream((inputStream) => async function* flatStream(): ITypedStream<Type> {
-        for await (const record of inputStream) {
-            if(record instanceof Object && (
-                Array.isArray(record) || Symbol.iterator in record || Symbol.asyncIterator in record
-            )) {
-                for await (const element of record) {
-                    yield element
-                }
-            } else {
-                yield record
-            }
-        }
-    });
-}
-
-function tap<Input>(fn: (input: Input) => MaybeAsyncType<any>): ITypedMapper<Input, Input> {
-    return map<Input, Input>(async (input): Promise<Input> => {
-        await fn(input)
-        return input
-    })
-}
-
-
-function filter<Input>(condition: (input: Input) => MaybeAsyncType<boolean | undefined | null>): ITypedMapper<Input, Input> {
-    return transformStream((inputStream) => async function* filtered(): ITypedStream<Input> {
-        for await (const record of inputStream) {
-            if (await condition(record)) {
-                yield record
-            }
-        }
-    });
-}
-
-async function* sequence(size: number): ITypedStream<number> {
-    for (let i = 0; i < size; i++) {
-        yield i;
-    }
-}
-
-async function app() {
-    let idx = 0;
-    const x = Pipe(sequence(3))
-        .Then(map((x) => x + 10))
-        .Then(tap((x) => console.log(x)))
-        .Then(filter((x) => x > 1))
-        .Then(map((a): { name: string } => ({name: String(a)})))
-        .Then(map((x) => ({...x, ok: true})))
-        .Then(tap((x) => console.log(x)))
-        .Then(batch(2))
-        .Then(tap((x) => console.log(x)))
-        .Then(flat())
-        .Then(map((x) => [x,x,x]))
-        .Then(flat())
-        .Then(tap((x) => {
-            console.log('>>>', x)
-            idx++;
-            if (idx % 100000 === 0) {
-                console.log(x)
-            }
-        }));
-
-    await run(x)
-}
-
-app().catch(console.error)
