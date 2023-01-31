@@ -1,10 +1,9 @@
 import {sequence} from "./sequence";
 import {map} from "./map";
 import {tap} from "./tap";
-import {filter} from "./filter";
 import {batch} from "./batch";
 import {flat} from "./flat";
-import {pull, run} from "./index";
+import {pull} from "./index";
 import {from} from "./from";
 
 export async function app() {
@@ -12,7 +11,13 @@ export async function app() {
     const x = from(sequence(5))
         .pipe(map((x) => x + 10))
         .pipe(tap((x) => console.log(x)))
-        .pipe(filter((x) => x > 1))
+        // .pipe(map(String))
+        // .pipe(
+        //     pipe(
+        //         filter((x) => x > 1)
+        //     )
+        //     // .pipe(filter((x) => x > 1))
+        // )
         .pipe(map((a): { name: string } => ({name: String(a)})))
         .pipe(map((x) => ({...x, ok: true})))
         .pipe(tap((x) => console.log(x)))

@@ -13,7 +13,7 @@ export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStrea
             },
         }
     } else {
-        throw new Error(`Impossible to make a stream, got ${typeof stream}`)
+        throw new Error(`Impossible to make a stream, got ${typeof stream}, is not iterable`)
     }
 }
 
