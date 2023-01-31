@@ -1,7 +1,7 @@
 import {TypedStream} from "./type";
 
-export async function* sequence(size: number): TypedStream<number> {
-    for (let i = 0; i < size; i++) {
+export async function* sequence(length: number): TypedStream<number> {
+    for (let i = 0; i < length; i++) {
         yield i;
     }
 }
