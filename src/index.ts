@@ -27,11 +27,14 @@ pipe(foo())
 
 async function run<T extends any>(stream: TypedStream<T>) {
     for await (const record of stream) {
+        console.log(record)
     }
 }
 
 async function app() {
-    await run(foo())
+    const stream = foo();
+    await run(stream)
+    await run(stream)
 }
 
 app().catch(console.error)
