@@ -3,6 +3,8 @@
   "version": "0.0.2",
   "description": "strict-stream - strictly / strongly typed stream",
   "main": "index.js",
+  "module": "index.mjs",
+  "types": "index.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^29.4.4",
@@ -16,7 +18,7 @@
   },
   "scripts": {
     "test": "npm run test.vitest.run",
-    "ci": "npm run test.compilation && npm run test && npm run build",
+    "ci": "npm run test.compilation && npm run test && npm run build && cp -r dist/* .",
     "test.jest": "jest",
     "test.vitest": "vitest",
     "test.vitest.run": "vitest run",
