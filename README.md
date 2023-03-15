@@ -1,1 +1,1 @@
-## TypedStream
+## strict-stream

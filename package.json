@@ -1,7 +1,7 @@
 {
-  "name": "typed-stream",
-  "version": "1.0.0",
-  "description": "",
+  "name": "strict-stream",
+  "version": "0.0.1",
+  "description": "strict-stream - strictly / strongly typed stream",
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
@@ -16,13 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/slavahatnuke/typed-stream.git"
+    "url": "git+https://github.com/slavahatnuke/strict-stream.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["stream", "strict", "strict-stream", "strictly-typed-stream", "typed-stream"],
+  "author": "slava hatnuke",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/slavahatnuke/typed-stream/issues"
+    "url": "https://github.com/slavahatnuke/strict-stream/issues"
   },
-  "homepage": "https://github.com/slavahatnuke/typed-stream#readme"
+  "homepage": "https://github.com/slavahatnuke/strict-stream#readme"
 }
