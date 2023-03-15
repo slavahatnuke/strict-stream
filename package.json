@@ -16,6 +16,7 @@
   },
   "scripts": {
     "test": "npm run test.vitest.run",
+    "ci": "npm run test.compilation && npm run test",
     "test.jest": "jest",
     "test.vitest": "vitest",
     "test.vitest.run": "vitest run",
