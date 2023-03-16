@@ -21,7 +21,7 @@
     "ci.clean": "git clean -f",
     "release.start": "changeset",
     "release.complete": "changeset version",
-    "release": "npm run ci && changeset publish",
+    "release.deploy": "npm run ci && changeset publish",
     "test.vitest": "vitest",
     "test.vitest.run": "vitest run",
     "test.compilation": "tsc --noEmit",
