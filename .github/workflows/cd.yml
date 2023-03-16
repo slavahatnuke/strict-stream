@@ -17,4 +17,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: yarn ci.clean
-      - run: sleep 10 && yarn test.post-release
+      - run: sleep 5 && yarn test.post-release
