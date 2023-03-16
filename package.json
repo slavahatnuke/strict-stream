@@ -2,11 +2,12 @@
   "name": "strict-stream",
   "version": "0.0.2",
   "description": "strict-stream - strictly / strongly typed stream",
-  "main": "index.js",
-  "module": "index.mjs",
-  "types": "index.d.ts",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "types": "./index.d.ts",
   "dependencies": {},
   "devDependencies": {
+    "@changesets/cli": "^2.26.0",
     "@types/jest": "^29.4.4",
     "@types/node": "^18.11.18",
     "jest": "^29.5.0",
@@ -18,7 +19,9 @@
   },
   "scripts": {
     "test": "npm run test.vitest.run",
-    "ci": "npm run test.compilation && npm run test && npm run build && cp -r dist/* .",
+    "ci": "npm run test.compilation && npm run test && npm run build && cp -r dist/* . && rm -rf ./dist",
+    "ci.clean": "git clean -f",
+    "release": "npm run ci",
     "test.jest": "jest",
     "test.vitest": "vitest",
     "test.vitest.run": "vitest run",
@@ -38,7 +41,7 @@
     "typed-stream"
   ],
   "author": "slava hatnuke",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/slavahatnuke/strict-stream/issues"
   },
