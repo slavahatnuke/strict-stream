@@ -1,6 +1,6 @@
 {
   "name": "strict-stream",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "strict-stream - strictly / strongly typed stream",
   "main": "./index.js",
   "module": "./index.mjs",
@@ -21,7 +21,9 @@
     "test": "npm run test.vitest.run",
     "ci": "npm run test.compilation && npm run test && npm run build && cp -r dist/* . && rm -rf ./dist",
     "ci.clean": "git clean -f",
-    "release": "npm run ci",
+    "release.start": "changeset",
+    "release.complete": "changeset version",
+    "release": "npm run ci && changeset publish",
     "test.jest": "jest",
     "test.vitest": "vitest",
     "test.vitest.run": "vitest run",
