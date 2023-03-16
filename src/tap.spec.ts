@@ -8,7 +8,7 @@ describe(tap.name, () => {
 
         const collectedValues: number[] = [];
         const stream = from([1, 2, 3])
-            .pipe(tap((value) => {
+            .pipe(tap(async (value) => {
                 collectedValues.push(value)
                 return 'ANY'
             }))
