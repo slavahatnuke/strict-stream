@@ -21,9 +21,9 @@
     "release.start": "changeset",
     "release.finish": "changeset version",
     "release.deploy": "npm run ci && changeset publish",
-    "test.vitest": "vitest --config vitest.config.ts",
-    "test.post-release": "npm install strict-stream --no-save && vitest --config vitest.post-release.config.ts run",
-    "test.vitest.run": "vitest --config vitest.config.ts run",
+    "test.vitest": "vitest --config src/vitest.config.ts",
+    "test.post-release": "npm install strict-stream --no-save && vitest --config src/vitest.post-release.config.ts run",
+    "test.vitest.run": "vitest --config src/vitest.config.ts run",
     "test.compilation": "tsc --noEmit",
     "build": "tsup src --format cjs,esm --dts"
   },
