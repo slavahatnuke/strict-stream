@@ -6,3 +6,4 @@
 /tsconfig.json
 /example.run.*
 /**example.run.*
+*.spec.*
