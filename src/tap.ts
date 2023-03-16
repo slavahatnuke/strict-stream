@@ -1,7 +1,7 @@
 import {map} from "./map";
-import {StrictStreamPromised, StrictStreamMapper} from "./index";
+import {Promised, StrictStreamMapper} from "./index";
 
-export function tap<Input>(fn: (input: Input) => StrictStreamPromised<any>): StrictStreamMapper<Input, Input> {
+export function tap<Input>(fn: (input: Input) => Promised<any>): StrictStreamMapper<Input, Input> {
     return map<Input, Input>(async (input): Promise<Input> => {
         await fn(input)
         return input
