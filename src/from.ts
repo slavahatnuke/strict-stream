@@ -1,9 +1,9 @@
-import {of, TypedStream, TypedStreamLike, TypedStreamOf} from "./index";
+import {of, StrictStream, StrictStreamLike, StrictStreamOf} from "./index";
 
-export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStream<Input> {
-    if (Symbol.asyncIterator in stream) {
+export function toStrictStream<Input>(stream: StrictStreamLike<Input>): StrictStream<Input> {
+    if (stream instanceof Object && Symbol.asyncIterator in stream) {
         return stream
-    } else if (Symbol.iterator in stream) {
+    } else if (stream instanceof Object && Symbol.iterator in stream) {
         return {
             [Symbol.asyncIterator]: () => {
                 const syncIterator = stream[Symbol.iterator]();
@@ -13,10 +13,10 @@ export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStrea
             },
         }
     } else {
-        throw new Error(`Impossible to make a stream, got ${typeof stream}, is not iterable`)
+        throw new Error(`${typeof stream}, is not iterable`)
     }
 }
 
-export function from<Input>(streamLike: TypedStreamLike<Input>): TypedStreamOf<Input> {
-    return of(toTypedStream<Input>(streamLike));
+export function from<Input>(streamLike: StrictStreamLike<Input>): StrictStreamOf<Input> {
+    return of(toStrictStream<Input>(streamLike));
 }

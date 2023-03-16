@@ -1,8 +1,8 @@
-import {TypedStream, TypedStreamMapper} from "./index";
+import {StrictStream, StrictStreamMapper} from "./index";
 
-export function batch<Input>(size: number): TypedStreamMapper<Input, Input[]> {
+export function batch<Input>(size: number): StrictStreamMapper<Input, Input[]> {
     let batched: Input[] = [];
-    return (inputStream) => (async function* batchedStream(): TypedStream<Input[]> {
+    return (inputStream) => (async function* batchedStream(): StrictStream<Input[]> {
         for await (const record of inputStream) {
             batched.push(record);
 
