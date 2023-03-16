@@ -1,7 +1,7 @@
 import {map} from "./map";
-import {TypedMaybeAsync, TypedStreamMapper} from "./index";
+import {StrictStreamPromised, StrictStreamMapper} from "./index";
 
-export function tap<Input>(fn: (input: Input) => TypedMaybeAsync<any>): TypedStreamMapper<Input, Input> {
+export function tap<Input>(fn: (input: Input) => StrictStreamPromised<any>): StrictStreamMapper<Input, Input> {
     return map<Input, Input>(async (input): Promise<Input> => {
         await fn(input)
         return input

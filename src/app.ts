@@ -3,7 +3,7 @@ import {map} from "./map";
 import {tap} from "./tap";
 import {batch} from "./batch";
 import {flat} from "./flat";
-import {pipe, pull} from "./index";
+import {pipe, run} from "./index";
 import {from} from "./from";
 
 export async function app() {
@@ -41,7 +41,7 @@ export async function app() {
             }
         }));
 
-    const last = await pull(x);
+    const last = await run(x);
 }
 
 

@@ -1,6 +1,6 @@
-import {of, TypedStream, TypedStreamLike, TypedStreamOf} from "./index";
+import {of, StrictStream, StrictStreamLike, StrictStreamOf} from "./index";
 
-export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStream<Input> {
+export function toTypedStream<Input>(stream: StrictStreamLike<Input>): StrictStream<Input> {
     if (Symbol.asyncIterator in stream) {
         return stream
     } else if (Symbol.iterator in stream) {
@@ -13,10 +13,10 @@ export function toTypedStream<Input>(stream: TypedStreamLike<Input>): TypedStrea
             },
         }
     } else {
-        throw new Error(`Impossible to make a stream, got ${typeof stream}, is not iterable`)
+        throw new Error(`${typeof stream}, is not iterable`)
     }
 }
 
-export function from<Input>(streamLike: TypedStreamLike<Input>): TypedStreamOf<Input> {
+export function from<Input>(streamLike: StrictStreamLike<Input>): StrictStreamOf<Input> {
     return of(toTypedStream<Input>(streamLike));
 }
