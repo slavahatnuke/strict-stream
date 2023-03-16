@@ -6,7 +6,7 @@ import {flat} from "./flat";
 import {pipe, run} from "./index";
 import {from} from "./from";
 
-export async function app() {
+export async function exampleRun() {
     let idx = 0;
 
     const composedMapper = pipe(
@@ -45,4 +45,4 @@ export async function app() {
 }
 
 
-app().catch(console.error)
+exampleRun().catch(console.error);
