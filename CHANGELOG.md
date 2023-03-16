@@ -1,5 +1,11 @@
 # strict-stream
 
+## 0.0.11
+
+### Patch Changes
+
+- added node.js stream support
+
 ## 0.0.10
 
 ### Patch Changes

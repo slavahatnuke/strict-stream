@@ -7,3 +7,5 @@
 /example.run.*
 /**example.run.*
 *.spec.*
+vitest.config.ts
+vitest.post-release.config.ts
