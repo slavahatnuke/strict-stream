@@ -26,3 +26,4 @@ jobs:
           cache: 'yarn'
       - run: yarn
       - run: yarn ci
+      - run: yarn ci.clean

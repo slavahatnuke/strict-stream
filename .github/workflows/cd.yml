@@ -16,3 +16,5 @@ jobs:
       - run: yarn release.deploy
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: yarn ci.clean
+      - run: yarn test.post-release
