@@ -2,7 +2,6 @@ import {describe, expect, it} from "vitest";
 import {from} from "./from";
 import {toArray} from "./toArray";
 import {map} from "./map";
-import {sequence} from "./sequence";
 import {flat} from "./flat";
 
 describe(flat.name, () => {
@@ -28,7 +27,7 @@ describe(flat.name, () => {
 
         const outputs = await toArray(usersWithOrders);
 
-        expect(outputs).toEqual([ 125, 444 ])
+        expect(outputs).toEqual([125, 444])
     });
 
     it('flatten a stream of stream', async () => {
@@ -52,6 +51,22 @@ describe(flat.name, () => {
 
         const outputs = await toArray(usersWithOrders);
 
-        expect(outputs).toEqual([ 125, 444 ])
+        expect(outputs).toEqual([125, 444])
+    });
+
+
+    it('does not affect non-iterable values', async () => {
+        const stream = from([
+            1, 2, 3
+        ])
+
+            .pipe(flat())
+            .pipe(flat())
+            .pipe(flat())
+            .pipe(map((value) => String(value)))
+
+        const outputs = await toArray(stream);
+
+        expect(outputs).toEqual(['1', '2', '3'])
     });
 })
