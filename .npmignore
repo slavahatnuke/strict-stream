@@ -1,0 +1,8 @@
+/.changeset
+/.github
+/src
+/CHANGELOG.md
+/README.md
+/tsconfig.json
+/example.run.*
+/**example.run.*
