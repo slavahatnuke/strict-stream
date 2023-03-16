@@ -44,7 +44,7 @@ describe(flat.name, () => {
         ])
 
             .pipe(map((value) => {
-                // to be sure it could flatten array of orders
+                // to be sure it could flatten stream of orders
                 return from(value.orders)
             }))
             .pipe(flat())
