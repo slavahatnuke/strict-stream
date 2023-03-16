@@ -1,5 +1,11 @@
 # strict-stream
 
+## 0.0.7
+
+### Patch Changes
+
+- Clean up
+
 ## 0.0.6
 
 ### Patch Changes
