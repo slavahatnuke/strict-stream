@@ -1,5 +1,11 @@
 # strict-stream
 
+## 0.0.6
+
+### Patch Changes
+
+- Clean up deps
+
 ## 0.0.5
 
 ### Patch Changes
