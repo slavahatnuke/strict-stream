@@ -21,7 +21,7 @@ describe(nodeTransform.name, () => {
 
     it('transform in default mode', async () => {
         const myTransform = new Transform({
-            transform(chunk, encoding, callback) {
+            transform(chunk: any, encoding, callback) {
                 callback(null, `${chunk} + OK`)
             },
         });
@@ -45,7 +45,7 @@ describe(nodeTransform.name, () => {
             ])
         ])
 
-        const strings = bufferChunks.map((chunk) => chunk.toString());
+        const strings = bufferChunks.map((chunk: any) => chunk.toString());
 
         expect(strings).toEqual([ 'Hello + OK' ])
     });
