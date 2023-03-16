@@ -21,7 +21,6 @@ describe(reduce.name, () => {
         const outputs = await toArray(stream);
 
         expect(outputs).toEqual([{sum: 6}])
-        expect(await run(stream, null)).toEqual({sum: 6})
     });
 
     it('reduce values with run helper', async () => {
