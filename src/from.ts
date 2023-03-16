@@ -1,9 +1,9 @@
 import {of, StrictStream, StrictStreamLike, StrictStreamOf} from "./index";
 
-export function toTypedStream<Input>(stream: StrictStreamLike<Input>): StrictStream<Input> {
-    if (Symbol.asyncIterator in stream) {
+export function toStrictStream<Input>(stream: StrictStreamLike<Input>): StrictStream<Input> {
+    if (stream instanceof Object && Symbol.asyncIterator in stream) {
         return stream
-    } else if (Symbol.iterator in stream) {
+    } else if (stream instanceof Object && Symbol.iterator in stream) {
         return {
             [Symbol.asyncIterator]: () => {
                 const syncIterator = stream[Symbol.iterator]();
@@ -18,5 +18,5 @@ export function toTypedStream<Input>(stream: StrictStreamLike<Input>): StrictStr
 }
 
 export function from<Input>(streamLike: StrictStreamLike<Input>): StrictStreamOf<Input> {
-    return of(toTypedStream<Input>(streamLike));
+    return of(toStrictStream<Input>(streamLike));
 }
