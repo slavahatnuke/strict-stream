@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.11
+
+### Patch Changes
+
+- add buffer
+
 ## 1.0.10
 
 ### Patch Changes
