@@ -71,17 +71,17 @@ export type IPublishToConcurrency<T> = ((
   quantity: ICounter; // queued quantity
 };
 
-export function Concurrency<T, ReturnType = any>(
+export function Concurrency<Input, Output = any>(
   maxConcurrency: number,
-  worker: (message: T) => Promise<ReturnType>,
-): IPublishToConcurrency<T> {
+  worker: (message: Input) => Promise<Output>,
+): IPublishToConcurrency<Input> {
   const max = maxConcurrency;
   const concurrencyCounter = Counter();
   const queuedQuantity = Counter();
 
   let finishing = false;
 
-  function handle(message: T, defer: IDefer<any>) {
+  function handle(message: Input, defer: IDefer<any>) {
     concurrencyCounter.increment();
 
     (async () => {
@@ -108,7 +108,7 @@ export function Concurrency<T, ReturnType = any>(
 
   const isEmpty = () => concurrencyCounter.value() <= 0;
 
-  async function tryToHandle(message: T, defer: IDefer<any>) {
+  async function tryToHandle(message: Input, defer: IDefer<any>) {
     if (canHandle()) {
       handle(message, defer);
     } else {
@@ -117,7 +117,7 @@ export function Concurrency<T, ReturnType = any>(
     }
   }
 
-  const publish = async (message: T) => {
+  const publish = async (message: Input) => {
     // if (finishing) {
     //   throw new Error(`Finishing concurrency, publish is not allowed`);
     // }

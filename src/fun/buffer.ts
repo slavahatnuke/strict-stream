@@ -28,7 +28,7 @@ export function Buffer<T>(size = 1): IBuffer<T> {
                 weWaitForRecordsToRead = Defer<void>();
             }
 
-            // nothing to read
+            // waiting to read
             await weWaitForRecordsToRead.promise;
         }
 

@@ -2,7 +2,7 @@ import {Promised, StrictStream} from "./index";
 
 const DONE = Symbol('DONE');
 
-type IRead<T> = () => Promised<T | typeof DONE>;
+export type IRead<T> = () => Promised<T | typeof DONE>;
 
 export function Reader<T>(
     read: IRead<T>
