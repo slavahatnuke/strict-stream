@@ -1,2 +1,2 @@
 ## strict-stream
-[![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml)[![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml)
+[![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml) | [![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml)
