@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.5
+
+### Patch Changes
+
+- lint
+
 ## 1.0.4
 
 ### Patch Changes

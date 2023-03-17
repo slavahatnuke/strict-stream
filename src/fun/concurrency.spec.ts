@@ -1,9 +1,6 @@
 import {Concurrency} from './concurrency';
 import {delay} from './delay';
-import {tick} from './tick';
 import {describe, expect, it} from "vitest";
-import {keepConcurrency} from "./keepConcurrency";
-import {KeyedConcurrency} from "./keyedConcurrency";
 
 describe(Concurrency.name, () => {
 

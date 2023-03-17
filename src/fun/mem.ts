@@ -1,4 +1,4 @@
-export function mem<T extends any>(fn: () => T): () => T {
+export function mem<T>(fn: () => T): () => T {
     let value: any = undefined;
     let called = false;
 

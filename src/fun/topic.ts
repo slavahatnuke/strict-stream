@@ -44,7 +44,7 @@ export class TopicAggregateError extends Error {
   constructor(public errors: Error[], message?: string) {
     super(message);
 
-    const error = errors[0] || ({} as any);
+    const error = errors[0] || ({} as never);
 
     this.message = message || error.message || '';
     this.stack = error.stack || '';

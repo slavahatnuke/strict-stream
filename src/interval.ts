@@ -6,7 +6,7 @@ export type IInterval = StrictStream<number> & {
     stop: () => void
 };
 
-export function interval(ms: number, startImmediate: boolean = false): IInterval {
+export function interval(ms: number, startImmediate = false): IInterval {
     let point = startImmediate ? null : Date.now();
 
     let delayDefer = Defer<void>();

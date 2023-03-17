@@ -1,6 +1,6 @@
 {
   "name": "strict-stream",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "strict-stream - strictly / strongly typed stream",
   "main": "./index.js",
   "module": "./index.mjs",
@@ -9,6 +9,10 @@
   "devDependencies": {
     "@changesets/cli": "^2.26.0",
     "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^8.36.0",
+    "madge": "^6.0.0",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
     "vitest": "^0.29.3"
@@ -16,18 +20,21 @@
   "scripts": {
     "test": "npm run test.vitest.run",
     "dev": "npm run test.vitest",
-    "ci": "npm run test.compilation && npm run test && npm run build && cp -r dist/* . && rm -rf ./dist",
+    "ci": "npm run test.compilation && npm run test.deps && npm run lint.only && npm run test && npm run build",
     "ci.clean": "git clean -f -d",
     "release.start": "changeset",
     "release.finish": "changeset version",
-    "release.deploy": "npm run ci && changeset publish",
+    "release.deploy": "npm run ci && (cp -r dist/* . && rm -rf ./dist) && changeset publish",
     "test.watch": "vitest --config src/vitest.config.ts",
     "test.post-release": "npm install strict-stream --no-save && vitest --config src/vitest.post-release.config.ts run",
     "test.vitest.run": "vitest --config src/vitest.config.ts run",
     "test.compilation": "tsc --noEmit",
+    "test.deps": "npx madge --circular --ts-config tsconfig.json --extensions ts src",
     "build.v2": "tsup src --format cjs,esm --dts",
     "build.v1": "tsc --outDir dist --module commonjs --declaration true",
-    "build": "npm run build.v2 && npm run build.v1"
+    "build": "npm run build.v2 && npm run build.v1",
+    "lint": "eslint src/**/*.ts --fix",
+    "lint.only": "eslint src/**/*.ts"
   },
   "repository": {
     "type": "git",
