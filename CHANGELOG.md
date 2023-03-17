@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.7
+
+### Patch Changes
+
+- Up
+
 ## 1.0.6
 
 ### Patch Changes
