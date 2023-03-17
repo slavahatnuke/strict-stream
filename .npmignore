@@ -9,4 +9,4 @@
 /**example.run.*
 *.spec.*
 vitest.config.ts
-vitest.post-release.config.ts
+vitest.cd.config.ts

@@ -6,9 +6,11 @@ import {toArray} from "strict-stream/toArray";
 import {describe, expect, it} from "vitest";
 import {scale} from "../src/scale";
 
-describe('post-release', () => {
-    it('test package.json', async () => {
+describe('release', () => {
+    it('test package.json version', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const installedVersion = require(`${__dirname}/../node_modules/strict-stream/package.json`);
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const currentVersion = require(`${__dirname}/../package.json`);
 
         expect(installedVersion.version).toEqual(currentVersion.version)
