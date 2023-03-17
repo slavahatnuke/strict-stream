@@ -6,18 +6,18 @@ describe(Writer.name, () => {
 
     it('keeps buffer', async function () {
 
-        const b1 = Writer<number>(4);
-        expect(b1.length()).toEqual(0);
-        await b1.write(1)
-        expect(b1.length()).toEqual(1);
-        await b1.write(2)
-        expect(b1.length()).toEqual(2);
-        await b1.write(3)
-        expect(b1.length()).toEqual(3);
+        const writer = Writer<number>(4);
+        expect(writer.length()).toEqual(0);
+        await writer.write(1)
+        expect(writer.length()).toEqual(1);
+        await writer.write(2)
+        expect(writer.length()).toEqual(2);
+        await writer.write(3)
+        expect(writer.length()).toEqual(3);
 
         let p4Resolved = false;
 
-        const p4 = b1.write(4);
+        const p4 = writer.write(4);
 
         p4.then(() => {
             p4Resolved = true;
@@ -25,13 +25,13 @@ describe(Writer.name, () => {
 
         expect(p4Resolved).toEqual(false)
 
-        expect(b1.length()).toEqual(4);
+        expect(writer.length()).toEqual(4);
 
-        setTimeout(() => b1.finish(), 0)
-        const numbers = await toArray(b1.stream);
+        setTimeout(() => writer.finish(), 0)
+        const numbers = await toArray(writer.stream);
 
         expect(p4Resolved).toEqual(true)
-        expect(b1.length()).toEqual(0);
+        expect(writer.length()).toEqual(0);
         expect(numbers).toEqual([1, 2, 3, 4])
     });
 })
