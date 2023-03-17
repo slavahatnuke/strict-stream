@@ -1,6 +1,7 @@
 /.changeset
 /.github
 /src
+/.eslintrc.js
 /CHANGELOG.md
 /README.md
 /tsconfig.json
