@@ -1,6 +1,5 @@
 import {describe, expect, it} from "vitest";
 import {merge} from "./merge";
-import {of} from "./index";
 import {from} from "./from";
 import {toArray} from "./toArray";
 
