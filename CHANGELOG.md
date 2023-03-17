@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.3
+
+### Patch Changes
+
+- Clean up build files
+
 ## 1.0.2
 
 ### Patch Changes
