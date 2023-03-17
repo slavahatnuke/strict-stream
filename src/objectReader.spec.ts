@@ -1,13 +1,17 @@
 import {describe, expect, it} from "vitest";
-import {reader} from "./reader";
 import {toArray} from "./toArray";
-import {objectReader} from "./objectReader";
+import {ObjectReader} from "./objectReader";
 
 
-describe(objectReader.name, () => {
-    it('test', async () => {
+describe(ObjectReader.name, () => {
+    it('array of object', async () => {
         const array = [{id: 1}, {id: 2}]
-        const stream = objectReader(() => array.shift());
+        const stream = ObjectReader(() => array.shift());
         expect(await toArray(stream)).toEqual([{id: 1}, {id: 2}])
+    });
+    it('array of arrays', async () => {
+        const array = [[1], [2]]
+        const stream = ObjectReader(() => array.shift());
+        expect(await toArray(stream)).toEqual([[1], [2]])
     });
 })

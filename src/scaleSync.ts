@@ -7,7 +7,7 @@ export function scaleSync<Input, Output>(size: number, mapper: (input: Input) =>
     return pipe(
         batch<Input>(size),
     ).pipe(
-        map((values) => Promise.all(values.map((value) => mapper(value))))
+        map((values) => Promise.all(values.map(mapper)))
     ).pipe(
         flat()
     );

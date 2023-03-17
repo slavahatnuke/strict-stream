@@ -1,39 +1,96 @@
-import {IQueue, Queue, QUEUE_READ} from "./queue";
-import {Defer} from "./defer";
+import {Defer, IDefer} from "./defer";
+import {of, StrictStream} from "../index";
+import {Reader} from "../reader";
+import {flat} from "../flat";
 
-export function Buffer<T extends any>(size: number): IQueue<T> {
-    const desired = size
-    const queue = Queue<T>();
+export type IBuffer<T> = {
+    stream: StrictStream<T>;
+    write: (data: T) => Promise<void>;
+    finish: () => Promise<void>;
+    length(): number;
+};
 
-    async function write(value: T) {
-        if (queue.length() < desired) {
-            queue.write(value)
-        } else {
-            const defer = Defer<void>();
+export function Buffer<T>(size = 1): IBuffer<T> {
+    let records: T[] = [];
 
-            const unsubscribe = queue.subscribe((event) => {
-                switch (event.type) {
-                    case QUEUE_READ:
-                        if (queue.length() < desired) {
-                            queue.write(value)
-                            defer.resolve()
-                            unsubscribe()
-                        }
+    let weWaitUntilRecordsConsumed: IDefer<void> | undefined = undefined;
+    let weWaitForRecordsToRead: IDefer<void> | undefined = undefined;
 
-                        break;
-                }
-            });
+    let finishing = false;
 
-            await defer.promise;
+    const read = async (): Promise<T[] | typeof Reader.DONE> => {
+        if (!records.length) {
+            if (finishing) {
+                return Reader.DONE;
+            }
+
+            if (!weWaitForRecordsToRead) {
+                weWaitForRecordsToRead = Defer<void>();
+            }
+
+            // nothing to read
+            await weWaitForRecordsToRead.promise;
         }
-    }
+
+        const currentRecords = [...records];
+        records = [];
+
+        if (weWaitUntilRecordsConsumed) {
+            weWaitUntilRecordsConsumed.resolve();
+            weWaitUntilRecordsConsumed = undefined;
+        }
+
+        if (finishing) {
+            if (currentRecords.length) {
+                return currentRecords;
+            } else {
+                return Reader.DONE;
+            }
+        }
+
+        return currentRecords;
+    };
 
     return {
-        write,
-        read: queue.read,
-        length: queue.length,
-        subscribe: queue.subscribe,
-        finish: queue.finish,
-        destroy: queue.destroy,
-    }
+        async write(data: T) {
+            if (finishing) {
+                throw new Error(`Buffer is finishing, impossible to write`);
+            }
+
+            records.push(data);
+
+            if (weWaitForRecordsToRead) {
+                weWaitForRecordsToRead.resolve();
+                weWaitForRecordsToRead = undefined;
+            }
+
+            if (records.length >= size) {
+                if (!weWaitUntilRecordsConsumed) {
+                    weWaitUntilRecordsConsumed = Defer<void>();
+                }
+
+                await weWaitUntilRecordsConsumed.promise;
+            }
+        },
+
+        async finish() {
+            finishing = true;
+
+            if (weWaitForRecordsToRead) {
+                weWaitForRecordsToRead.resolve();
+                weWaitForRecordsToRead = undefined;
+            }
+
+            if (weWaitUntilRecordsConsumed) {
+                await weWaitUntilRecordsConsumed.promise;
+                weWaitUntilRecordsConsumed = undefined;
+            }
+        },
+
+        length(): number {
+            return records.length
+        },
+
+        stream: of(Reader(read)).pipe(flat()),
+    };
 }
