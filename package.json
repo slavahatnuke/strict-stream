@@ -1,6 +1,6 @@
 {
   "name": "strict-stream",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "strict-stream - strictly / strongly typed stream",
   "main": "./index.js",
   "module": "./index.mjs",
@@ -25,7 +25,9 @@
     "test.post-release": "npm install strict-stream --no-save && vitest --config src/vitest.post-release.config.ts run",
     "test.vitest.run": "vitest --config src/vitest.config.ts run",
     "test.compilation": "tsc --noEmit",
-    "build": "tsup-node src --format cjs,esm --dts --no-splitting"
+    "build.v2": "tsup src --format cjs,esm --dts",
+    "build.v1": "tsc --outDir dist --module commonjs --declaration true",
+    "build": "npm run build.v2 && npm run build.v1"
   },
   "repository": {
     "type": "git",
