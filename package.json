@@ -25,7 +25,7 @@
     "test.post-release": "npm install strict-stream --no-save && vitest --config src/vitest.post-release.config.ts run",
     "test.vitest.run": "vitest --config src/vitest.config.ts run",
     "test.compilation": "tsc --noEmit",
-    "build": "tsup src --format cjs,esm --dts"
+    "build": "tsup-node src --format cjs,esm --dts --no-splitting"
   },
   "repository": {
     "type": "git",
