@@ -7,7 +7,7 @@ describe(merge.name, () => {
     it('test', async () => {
         const usersV1Stream = from([{type: 'userV1', name: 'User Name'}]);
         const usersV2Stream = from([{type: 'userV2', firstName: 'User', lastName: 'Name'}]);
-        const usersStream = merge(usersV1Stream, usersV2Stream);
+        const usersStream = merge<{type: 'userV1', name: string} | {type: 'userV2', firstName: 'User', lastName: 'Name'}>(usersV1Stream, usersV2Stream);
 
         expect(await toArray(usersStream)).toEqual([
             {type: 'userV1', name: 'User Name'},
