@@ -25,7 +25,7 @@
     "release.start": "changeset",
     "release.finish": "changeset version",
     "release.up": "npm run release.start && npm run release.finish",
-    "release.deploy": "npm run ci && (cp -r dist/* . && rm -rf ./dist) && changeset publish && git push origin --tags",
+    "release.deploy": "npm run ci && (cp -r dist/* . && rm -rf ./dist) && changeset publish",
     "test.watch": "vitest --config src/vitest.config.ts",
     "test.post-release": "npm install strict-stream --no-save && vitest --config src/vitest.post-release.config.ts run",
     "test.vitest.run": "vitest --config src/vitest.config.ts run",
