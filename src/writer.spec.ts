@@ -1,12 +1,12 @@
-import {Buffer} from "./buffer";
+import {Writer} from "./writer";
 import {describe, expect, it} from "vitest";
-import {toArray} from "../toArray";
+import {toArray} from "./toArray";
 
-describe(Buffer.name, () => {
+describe(Writer.name, () => {
 
     it('keeps buffer', async function () {
 
-        const b1 = Buffer<number>(4);
+        const b1 = Writer<number>(4);
         expect(b1.length()).toEqual(0);
         await b1.write(1)
         expect(b1.length()).toEqual(1);

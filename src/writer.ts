@@ -1,16 +1,16 @@
-import {Defer, IDefer} from "./defer";
-import {of, StrictStream} from "../index";
-import {Reader} from "../reader";
-import {flat} from "../flat";
+import {Defer, IDefer} from "./fun/defer";
+import {of, StrictStream} from "./index";
+import {Reader} from "./reader";
+import {flat} from "./flat";
 
-export type IBuffer<T> = {
+export type IWriter<T> = {
     stream: StrictStream<T>;
     write: (data: T) => Promise<void>;
     finish: () => Promise<void>;
     length(): number;
 };
 
-export function Buffer<T>(size = 1): IBuffer<T> {
+export function Writer<T>(bufferSize = 1): IWriter<T> {
     let records: T[] = [];
 
     let weWaitUntilRecordsConsumed: IDefer<void> | undefined = undefined;
@@ -64,7 +64,7 @@ export function Buffer<T>(size = 1): IBuffer<T> {
                 weWaitForRecordsToRead = undefined;
             }
 
-            if (records.length >= size) {
+            if (records.length >= bufferSize) {
                 if (!weWaitUntilRecordsConsumed) {
                     weWaitUntilRecordsConsumed = Defer<void>();
                 }

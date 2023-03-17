@@ -1,11 +1,11 @@
 import {StrictStream} from "./index";
 import {IRead, Read} from "./reader";
-import {Buffer, IBuffer} from "./fun/buffer";
+import {Writer, IWriter} from "./writer";
 import {syncTick} from "./fun/tick";
 
 // TODO better types
 export function merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type> {
-    let outputBuffer: IBuffer<Type>;
+    let outputBuffer: IWriter<Type>;
     let readOutput: IRead<Type>;
     let _error: Error | undefined = undefined;
 
@@ -24,7 +24,7 @@ export function merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>
                     }
 
                     if (!outputBuffer) {
-                        outputBuffer = Buffer<Type>()
+                        outputBuffer = Writer<Type>()
 
                         syncTick(async () => {
                             try {

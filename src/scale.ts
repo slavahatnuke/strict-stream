@@ -1,11 +1,11 @@
 import {Promised, StrictStreamMapper} from "./index";
 import {IRead, Read} from "./reader";
-import {Buffer, IBuffer} from "./fun/buffer";
+import {Writer, IWriter} from "./writer";
 import {Concurrency, IPublishToConcurrency} from "./fun/concurrency";
 import {syncTick} from "./fun/tick";
 
 export function scale<Input, Output>(max: number, mapper: (input: Input) => Promised<Output>): StrictStreamMapper<Input, Output> {
-    let outputBuffer: IBuffer<Output>;
+    let outputBuffer: IWriter<Output>;
     let readInput: IRead<Input>;
     let readOutput: IRead<Output>;
     let concurrencyControl: IPublishToConcurrency<Input>;
@@ -35,7 +35,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                         }
 
                         if (!outputBuffer) {
-                            outputBuffer = Buffer<Output>()
+                            outputBuffer = Writer<Output>()
 
                             if (!concurrencyControl) {
                                 concurrencyControl = Concurrency<Input>(max, async (input) => {
