@@ -4,7 +4,7 @@ const DONE = Symbol('DONE');
 
 export type IRead<T> = () => Promised<T | typeof DONE>;
 
-export function Reader<T>(
+export function reader<T>(
     read: IRead<T>
 ): StrictStream<T> {
     return {
@@ -12,14 +12,14 @@ export function Reader<T>(
             return {
                 async next() {
                     const value = await read();
-                    return {done: value === Reader.DONE, value};
+                    return {done: value === reader.DONE, value};
                 },
             } as AsyncIterator<T>;
         },
     }
 }
 
-export function Read<T>(stream: StrictStream<T>): IRead<T> {
+export function read<T>(stream: StrictStream<T>): IRead<T> {
     let iterator: AsyncIterator<T>;
     return async () => {
         if (!iterator) {
@@ -29,12 +29,12 @@ export function Read<T>(stream: StrictStream<T>): IRead<T> {
         const {done, value} = await iterator.next();
 
         if (done) {
-            return Reader.DONE
+            return reader.DONE
         } else {
             return value
         }
     }
 }
 
-Read.DONE = DONE;
-Reader.DONE = DONE;
+read.DONE = DONE;
+reader.DONE = DONE;

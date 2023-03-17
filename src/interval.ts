@@ -1,5 +1,5 @@
 import {Defer} from "./fun/defer";
-import {Reader} from "./reader";
+import {reader} from "./reader";
 import {StrictStream} from "./index";
 
 export type IInterval = StrictStream<number> & {
@@ -15,9 +15,9 @@ export function interval(ms: number, startImmediate: boolean = false): IInterval
     let delayTimer: any
     let stopped = false;
 
-    const intervalStream = Reader<number>(async () => {
+    const intervalStream = reader<number>(async () => {
         if (stopped) {
-            return Reader.DONE
+            return reader.DONE
         }
 
         const now = Date.now();
@@ -36,7 +36,7 @@ export function interval(ms: number, startImmediate: boolean = false): IInterval
             await delayDefer.promise
 
             if (stopped) {
-                return Reader.DONE
+                return reader.DONE
             }
         }
 

@@ -1,5 +1,5 @@
 import {Promised, StrictStreamMapper} from "./index";
-import {IRead, Read} from "./reader";
+import {IRead, read} from "./reader";
 import {Writer, IWriter} from "./writer";
 import {Concurrency, IPublishToConcurrency} from "./fun/concurrency";
 import {syncTick} from "./fun/tick";
@@ -31,7 +31,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                         }
 
                         if (!readInput) {
-                            readInput = Read<Input>(inputStream)
+                            readInput = read<Input>(inputStream)
                         }
 
                         if (!outputBuffer) {
@@ -53,7 +53,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                                 while (true) {
                                     try {
                                         const inputValue = await readInput();
-                                        if (inputValue === Read.DONE) {
+                                        if (inputValue === read.DONE) {
                                             await finish();
                                             break;
                                         } else {
@@ -68,7 +68,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                         }
 
                         if (!readOutput) {
-                            readOutput = Read<Output>(outputBuffer.stream)
+                            readOutput = read<Output>(outputBuffer.stream)
                         }
 
                         const output = await readOutput();
@@ -77,7 +77,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                             throw _error
                         }
 
-                        if (output === Read.DONE) {
+                        if (output === read.DONE) {
                             return {done: true, value: undefined}
                         } else {
                             return {done: false, value: output}

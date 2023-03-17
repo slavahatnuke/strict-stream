@@ -6,18 +6,18 @@ describe(Writer.name, () => {
 
     it('keeps buffer', async function () {
 
-        const writer = Writer<number>(4);
-        expect(writer.length()).toEqual(0);
-        await writer.write(1)
-        expect(writer.length()).toEqual(1);
-        await writer.write(2)
-        expect(writer.length()).toEqual(2);
-        await writer.write(3)
-        expect(writer.length()).toEqual(3);
+        const streamWriter = Writer<number>(4);
+        expect(streamWriter.length()).toEqual(0);
+        await streamWriter.write(1)
+        expect(streamWriter.length()).toEqual(1);
+        await streamWriter.write(2)
+        expect(streamWriter.length()).toEqual(2);
+        await streamWriter.write(3)
+        expect(streamWriter.length()).toEqual(3);
 
         let p4Resolved = false;
 
-        const p4 = writer.write(4);
+        const p4 = streamWriter.write(4);
 
         p4.then(() => {
             p4Resolved = true;
@@ -25,13 +25,13 @@ describe(Writer.name, () => {
 
         expect(p4Resolved).toEqual(false)
 
-        expect(writer.length()).toEqual(4);
+        expect(streamWriter.length()).toEqual(4);
 
-        setTimeout(() => writer.finish(), 0)
-        const numbers = await toArray(writer.stream);
+        setTimeout(() => streamWriter.finish(), 0)
+        const numbers = await toArray(streamWriter.stream);
 
         expect(p4Resolved).toEqual(true)
-        expect(writer.length()).toEqual(0);
+        expect(streamWriter.length()).toEqual(0);
         expect(numbers).toEqual([1, 2, 3, 4])
     });
 })

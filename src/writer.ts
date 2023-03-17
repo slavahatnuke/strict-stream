@@ -1,6 +1,6 @@
 import {Defer, IDefer} from "./fun/defer";
 import {of, StrictStream} from "./index";
-import {Reader} from "./reader";
+import {reader} from "./reader";
 import {flat} from "./flat";
 
 export type IWriter<T> = {
@@ -18,10 +18,10 @@ export function Writer<T>(bufferSize = 1): IWriter<T> {
 
     let finishing = false;
 
-    const read = async (): Promise<T[] | typeof Reader.DONE> => {
+    const read = async (): Promise<T[] | typeof reader.DONE> => {
         if (!records.length) {
             if (finishing) {
-                return Reader.DONE;
+                return reader.DONE;
             }
 
             if (!weWaitForRecordsToRead) {
@@ -44,7 +44,7 @@ export function Writer<T>(bufferSize = 1): IWriter<T> {
             if (currentRecords.length) {
                 return currentRecords;
             } else {
-                return Reader.DONE;
+                return reader.DONE;
             }
         }
 
@@ -91,6 +91,6 @@ export function Writer<T>(bufferSize = 1): IWriter<T> {
             return records.length
         },
 
-        stream: of(Reader(read)).pipe(flat()),
+        stream: of(reader(read)).pipe(flat()),
     };
 }

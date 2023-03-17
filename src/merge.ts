@@ -1,5 +1,5 @@
 import {StrictStream} from "./index";
-import {IRead, Read} from "./reader";
+import {IRead, read} from "./reader";
 import {Writer, IWriter} from "./writer";
 import {syncTick} from "./fun/tick";
 
@@ -29,14 +29,14 @@ export function merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>
                         syncTick(async () => {
                             try {
                                 await Promise.all(streams.map(async (stream) => {
-                                    const read = Read(stream);
+                                    const readStream = read(stream);
                                     while (true) {
                                         if (_error) {
                                             break;
                                         }
-                                        const value = await read();
+                                        const value = await readStream();
 
-                                        if (value === Read.DONE) {
+                                        if (value === read.DONE) {
                                             break;
                                         } else {
                                             await outputBuffer.write(value)
@@ -52,7 +52,7 @@ export function merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>
                     }
 
                     if (!readOutput) {
-                        readOutput = Read<Type>(outputBuffer.stream)
+                        readOutput = read<Type>(outputBuffer.stream)
                     }
 
                     const output = await readOutput();
@@ -61,7 +61,7 @@ export function merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>
                         throw _error
                     }
 
-                    if (output === Read.DONE) {
+                    if (output === read.DONE) {
                         return {done: true, value: undefined}
                     } else {
                         return {done: false, value: output}

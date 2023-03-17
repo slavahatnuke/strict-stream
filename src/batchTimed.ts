@@ -1,5 +1,5 @@
 import {StrictStreamMapper} from "./index";
-import {IRead, Read} from "./reader";
+import {IRead, read} from "./reader";
 import {IWriter, Writer} from "./writer";
 import {syncTick} from "./fun/tick";
 import {clearTimeout} from "timers";
@@ -48,7 +48,7 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
                         }
 
                         if (!readInput) {
-                            readInput = Read<Input>(inputStream)
+                            readInput = read<Input>(inputStream)
                         }
 
                         if (!outputBuffer) {
@@ -57,7 +57,7 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
                                 while (true) {
                                     try {
                                         const inputValue = await readInput();
-                                        if (inputValue === Read.DONE) {
+                                        if (inputValue === read.DONE) {
                                             // process finished
                                             await finish();
                                             break;
@@ -88,7 +88,7 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
                         }
 
                         if (!readOutput) {
-                            readOutput = Read<Input[]>(outputBuffer.stream)
+                            readOutput = read<Input[]>(outputBuffer.stream)
                         }
 
                         const output = await readOutput();
@@ -97,7 +97,7 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
                             throw _error
                         }
 
-                        if (output === Read.DONE) {
+                        if (output === read.DONE) {
                             return {done: true, value: undefined}
                         } else {
                             return {done: false, value: output}

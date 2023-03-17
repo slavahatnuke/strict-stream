@@ -1,14 +1,14 @@
 import {Promised, StrictStream} from "./index";
-import {Reader} from "./reader";
+import {reader} from "./reader";
 
-export function ObjectReader<T extends object | object[]>(read: () => Promised<T | null | undefined | boolean | number>): StrictStream<T> {
-    return Reader<T>(async () => {
+export function objectReader<T extends object | object[]>(read: () => Promised<T | null | undefined | boolean | number>): StrictStream<T> {
+    return reader<T>(async () => {
         const object = await read();
 
         if (object instanceof Object) {
             return object;
         }
 
-        return Reader.DONE;
+        return reader.DONE;
     });
 }

@@ -1,29 +1,29 @@
 import {describe, expect, it} from "vitest";
 import {toArray} from "./toArray";
-import {Read, Reader} from "./reader";
+import {read, reader} from "./reader";
 import {sequence} from "./sequence";
 import {of} from "./index";
 import {readdir} from "fs/promises";
 
-describe(Reader.name, () => {
+describe(reader.name, () => {
     it('test', async () => {
         const array = [1, 2]
-        const stream = Reader<number>(() => {
+        const stream = reader<number>(() => {
             const value = array.shift();
-            return value || Reader.DONE
+            return value || reader.DONE
         });
         expect(await toArray(stream)).toEqual([1, 2])
     });
 })
 
-describe(Read.name, () => {
+describe(read.name, () => {
     it('test', async () => {
         const stream = of(sequence(3));
-        const read = Read(stream);
-        expect(await read()).toEqual(0)
-        expect(await read()).toEqual(1)
-        expect(await read()).toEqual(2)
-        expect(await read()).toEqual(Read.DONE)
-        expect(await read()).toEqual(Read.DONE)
+        const readStream = read(stream);
+        expect(await readStream()).toEqual(0)
+        expect(await readStream()).toEqual(1)
+        expect(await readStream()).toEqual(2)
+        expect(await readStream()).toEqual(read.DONE)
+        expect(await readStream()).toEqual(read.DONE)
     });
 })

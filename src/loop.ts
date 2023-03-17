@@ -1,8 +1,8 @@
 import {Promised, StrictStream} from "./index";
-import {Reader} from "./reader";
+import {reader} from "./reader";
 
 export function loop(condition: () => Promised<boolean>): StrictStream<true> {
-    return Reader<true>(async () => {
-        return await condition() ? true : Reader.DONE
+    return reader<true>(async () => {
+        return await condition() ? true : reader.DONE
     })
 }
