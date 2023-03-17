@@ -25,10 +25,6 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
         return {
             [Symbol.asyncIterator](): AsyncIterator<Output> {
                 return {
-                    throw(e?: any): Promise<IteratorResult<Output, any>> {
-                        console.log('>>>>>', e)
-                        throw e as Error
-                    },
                     async next(): Promise<IteratorResult<Output>> {
                         if (_error) {
                             throw _error
