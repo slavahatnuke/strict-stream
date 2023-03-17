@@ -4,7 +4,7 @@ import {map} from "strict-stream/map";
 import {toArray} from "strict-stream/toArray";
 
 import {describe, expect, it} from "vitest";
-import {scale} from "../src/scale";
+import {scale} from "strict-stream/scale";
 
 describe('release', () => {
     it('test package.json version', async () => {
