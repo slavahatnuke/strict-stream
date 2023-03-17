@@ -1,5 +1,5 @@
 ## strict-stream
-[![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml) [![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml)
+[![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml?branch=master) [![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml?branch=master)
 
 `strict-stream` is a `TypeScript` library that provides tools to manage strictly typed streams. 
 
