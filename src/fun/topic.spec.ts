@@ -23,7 +23,7 @@ describe(SyncTopic.name, () => {
 
 describe(Topic.name, () => {
 
-  it('PubSub', async function () {
+  it('Topic', async function () {
     const topic = Topic<string>();
 
     const values: string[] = [];
@@ -42,7 +42,7 @@ describe(Topic.name, () => {
     expect(values).toEqual(['AAA', 'BBB']);
   });
 
-  it('PubSub / sequent + reversed = false', async function () {
+  it('Topic / sequent + reversed = false', async function () {
     const topic = Topic<number>({ sequent: true, reversed: false });
 
     const values: { value: number; idx: number }[] = [];
@@ -91,7 +91,7 @@ describe(Topic.name, () => {
     ]);
   });
 
-  it('PubSub / sequent + reversed = true', async function () {
+  it('Topic / sequent + reversed = true', async function () {
     const topic = Topic<number>({ sequent: true, reversed: true });
 
     const values: { value: number; idx: number }[] = [];
@@ -140,7 +140,7 @@ describe(Topic.name, () => {
     ]);
   });
 
-  it('PubSub / sequent + error', async function () {
+  it('Topic / sequent + error', async function () {
     const topic = Topic<number>({ sequent: true, reversed: true });
 
     const values: { value: number; idx: number }[] = [];
@@ -163,7 +163,7 @@ describe(Topic.name, () => {
     }).rejects.toThrow('Wooo 1');
   });
 
-  it('PubSub / sequent + error', async function () {
+  it('Topic / sequent + error', async function () {
     const topic = Topic<number>({ sequent: true, reversed: true });
 
     const values: { value: number; idx: number }[] = [];
