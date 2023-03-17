@@ -1,31 +1,26 @@
-import {Promised, StrictStreamMapper} from "./index";
+import {Promised, StrictStream, StrictStreamMapper} from "./index";
 import {IRead, read} from "./reader";
 import {Writer, IWriter} from "./writer";
 import {Concurrency, IPublishToConcurrency} from "./fun/concurrency";
 import {syncTick} from "./fun/tick";
 
-export function scale<Input, Output>(max: number, mapper: (input: Input) => Promised<Output>): StrictStreamMapper<Input, Output> {
-    let outputBuffer: IWriter<Output>;
+export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
+    let outputBuffer: IWriter<Input>;
     let readInput: IRead<Input>;
-    let readOutput: IRead<Output>;
-    let concurrencyControl: IPublishToConcurrency<Input>;
+    let readOutput: IRead<Input>;
     let _error: Error | undefined = undefined;
 
     async function finish() {
-        if(concurrencyControl) {
-            await concurrencyControl.finish()
-        }
-
         if(outputBuffer) {
             await outputBuffer.finish()
         }
     }
 
-    return (inputStream) => {
+    return (inputStream: StrictStream<Input>) => {
         return {
-            [Symbol.asyncIterator](): AsyncIterator<Output> {
+            [Symbol.asyncIterator](): AsyncIterator<Input> {
                 return {
-                    async next(): Promise<IteratorResult<Output>> {
+                    async next(): Promise<IteratorResult<Input>> {
                         if (_error) {
                             throw _error
                         }
@@ -35,19 +30,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                         }
 
                         if (!outputBuffer) {
-                            outputBuffer = Writer<Output>()
-
-                            if (!concurrencyControl) {
-                                concurrencyControl = Concurrency<Input>(max, async (input) => {
-                                    try {
-                                        const output = await mapper(input);
-                                        await outputBuffer.write(output)
-                                    } catch (error) {
-                                        _error = error as Error
-                                        finish();
-                                    }
-                                });
-                            }
+                            outputBuffer = Writer<Input>(size)
 
                             syncTick(async () => {
                                 // eslint-disable-next-line no-constant-condition
@@ -58,7 +41,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                                             await finish();
                                             break;
                                         } else {
-                                            await concurrencyControl(inputValue);
+                                            await outputBuffer.write(inputValue)
                                         }
                                     } catch (error) {
                                         _error = error as Error
@@ -69,7 +52,7 @@ export function scale<Input, Output>(max: number, mapper: (input: Input) => Prom
                         }
 
                         if (!readOutput) {
-                            readOutput = read<Output>(outputBuffer.stream)
+                            readOutput = read<Input>(outputBuffer.stream)
                         }
 
                         const output = await readOutput();
