@@ -1,45 +1,45 @@
-import {Topic} from "./topic";
+import { ISubscribeTopic, SyncTopic } from './topic';
 
 export type ICounter = {
-    increment: (n?: number) => number,
-    decrement: (n?: number) => number,
-    value: () => number,
-    subscribe: (fn: (value: number) => any) => () => void
-    destroy: () => void
-}
+  increment: (n?: number) => number;
+  decrement: (n?: number) => number;
+  value: () => number;
+  subscribe: ISubscribeTopic<number>;
+  reset: () => void;
+};
 
 export function Counter(): ICounter {
-    const topic = Topic<number>()
-    const {subscribe, publish} = topic
+  const topic = SyncTopic<number>();
+  const { subscribe, publish } = topic;
 
-    let counter = 0;
+  let counter = 0;
 
-    function increment(n = 1) {
-        counter += n;
-        publish(counter)
-        return counter;
-    }
+  function increment(n = 1) {
+    counter += n;
+    publish(counter);
+    return counter;
+  }
 
-    function decrement(n = 1) {
-        counter -= n;
-        publish(counter)
-        return counter;
-    }
+  function decrement(n = 1) {
+    counter -= n;
+    publish(counter);
+    return counter;
+  }
 
-    function value() {
-        return counter;
-    }
+  function value() {
+    return counter;
+  }
 
-    function destroy() {
-        counter = 0;
-        topic.destroy()
-    }
+  function reset() {
+    counter = 0;
+    publish(0);
+  }
 
-    return {
-        increment,
-        decrement,
-        value,
-        subscribe,
-        destroy,
-    }
+  return {
+    increment,
+    decrement,
+    value,
+    subscribe,
+    reset,
+  };
 }

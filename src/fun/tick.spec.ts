@@ -1,40 +1,51 @@
-import {tick, tickAsync} from "./tick";
+import {describe, expect, it} from "vitest";
+import {syncTick, tick} from "./tick";
 import {Defer} from "./defer";
 import {delay} from "./delay";
-import {describe, expect, it} from "vitest";
 
 describe(tick.name, () => {
 
-    it('tick', async function () {
-
-        const defer = Defer();
+    it('syncTick', async function () {
+        const defer = Defer<boolean>();
         let ticked = false;
 
-        tick(() => {
-            defer.resolve(true)
-            ticked = true
-        })
+        syncTick(() => {
+            defer.resolve(true);
+            ticked = true;
+        });
 
         await defer.promise;
 
-        expect(ticked).toEqual(true)
+        expect(ticked).toEqual(true);
     });
 
-
-    it('tickAsync', async function () {
+    it('tick', async function () {
         let ticked = false;
         const d1 = Date.now();
 
-        await tickAsync(async () => {
+        await tick(async () => {
             await delay(200);
-            ticked = true
-            throw new Error(`woop`)
-        })
+            ticked = true;
+        });
 
         const d2 = Date.now();
 
-
-        expect(Math.round((d2 - d1) / 200)).toEqual(1)
-        expect(ticked).toEqual(true)
+        expect(Math.round((d2 - d1) / 200)).toEqual(1);
+        expect(ticked).toEqual(true);
     });
+
+    it('tick error', async function () {
+        let ticked = false;
+
+        await expect(async () => {
+            await tick(async () => {
+                await delay(200);
+                ticked = true;
+                throw new Error(`woop`);
+            });
+        }).rejects.toThrowError(`woop`);
+
+        expect(ticked).toEqual(true);
+    });
+
 })

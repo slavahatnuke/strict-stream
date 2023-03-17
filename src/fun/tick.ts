@@ -1,35 +1,35 @@
-import {Defer} from "./defer";
+import {Defer} from './defer';
 
-type ITickRunner = () => any;
-type ITickAsyncRunner = () => Promise<any> | any;
+type ITickSyncRunner = () => any;
+type ITickRunner = () => Promise<any> | any;
 
-export type ITick = (fn: ITickRunner) => void
+export type ITick = (fn: ITickSyncRunner) => void;
 
-export function Tick(): ITick {
-    if (setImmediate) {
-        return (fn: ITickRunner) => {
-            setImmediate(fn)
-        }
+export function SyncTick(): ITick {
+    if (setImmediate instanceof Function) {
+        return (fn: ITickSyncRunner) => {
+            setImmediate(fn);
+        };
     } else {
-        return (fn: ITickRunner) => {
-            setTimeout(fn, 0)
-        }
+        return (fn: ITickSyncRunner) => {
+            setTimeout(fn, 0);
+        };
     }
 }
 
-export const tick = Tick();
+export const syncTick = SyncTick();
 
-export async function tickAsync(fn: ITickAsyncRunner) {
+export async function tick(fn: ITickRunner) {
     const defer = Defer<void>();
 
-    tick(async () => {
+    syncTick(async () => {
         try {
-            await fn()
-            defer.resolve()
-        } catch {
-            defer.resolve()
+            await fn();
+            defer.resolve();
+        } catch (error) {
+            defer.reject(error as Error);
         }
-    })
+    });
 
     await defer.promise;
 }
