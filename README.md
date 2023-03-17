@@ -3,6 +3,5 @@
 
 `strict-stream` is a `TypeScript` library that provides tools to manage strictly typed streams. 
 
-This means that the data flowing through the streams is validated to ensure it conforms to a specific data type or structure, which helps catch errors early on, reduce bugs, and make code more reliable and easier to maintain.
-
-It helps to catch errors early on, reduce bugs, and make code more reliable and easier to maintain by ensuring that the data flowing through a stream conforms to a specific data type or structure.
+### Why?
+It ensures that the data flowing through a stream conforms to a specific data type or structure, which helps catch errors early on, reduce bugs, and make code more reliable and easier to maintain.
