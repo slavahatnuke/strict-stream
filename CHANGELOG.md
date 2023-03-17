@@ -1,5 +1,15 @@
 # strict-stream
 
+## 1.0.0
+
+### Major Changes
+
+- Added bunch of operators: batchTimed, interval, loop, merge, objectReader, reader, scale, scaleSync, writer
+
+### Patch Changes
+
+- Added flatMap
+
 ## 0.0.11
 
 ### Patch Changes
