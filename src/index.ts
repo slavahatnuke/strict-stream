@@ -25,6 +25,7 @@ export function of<Input>(inputStream: StrictStream<Input>): StrictStreamOf<Inpu
 
 export function pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStreamPlumber<In, Out> {
     const streamMapper: StrictStreamMapper<In, Out> = (input: StrictStream<In>) => mapper(input)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     streamMapper.pipe = <Output>(mapper: StrictStreamMapper<Out, Output>) => {
         return pipe<In, Output>((input: StrictStream<In>) => {
@@ -35,7 +36,7 @@ export function pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStream
     return streamMapper as StrictStreamPlumber<In, Out>;
 }
 
-export async function run<Type extends any, Default extends any = undefined>(stream: StrictStream<Type>, defaultValue = undefined as Default): Promise<Type | Default> {
+export async function run<Type, Default = undefined>(stream: StrictStream<Type>, defaultValue = undefined as Default): Promise<Type | Default> {
     let value: Type | Default = defaultValue;
     for await (const record of stream) {
         value = record

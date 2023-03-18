@@ -1,5 +1,4 @@
 import {describe, expect, it} from "vitest";
-import {tap} from "./tap";
 import {from} from "./from";
 import {toArray} from "./toArray";
 

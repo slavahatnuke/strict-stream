@@ -1,6 +1,6 @@
 import {StrictStream} from "./index";
 import {IRead, read} from "./reader";
-import {Writer, IWriter} from "./writer";
+import {IWriter, Writer} from "./writer";
 import {syncTick} from "./fun/tick";
 
 // TODO better types
@@ -30,7 +30,6 @@ export function merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>
                             try {
                                 await Promise.all(streams.map(async (stream) => {
                                     const readStream = read(stream);
-                                    // eslint-disable-next-line no-constant-condition
                                     while (true) {
                                         if (_error) {
                                             break;

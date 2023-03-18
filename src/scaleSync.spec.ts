@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {scaleSync} from "./scaleSync";
-import {of, run} from "./index";
+import {of} from "./index";
 import {sequence} from "./sequence";
 import {delay} from "./fun/delay";
 import {toArray} from "./toArray";

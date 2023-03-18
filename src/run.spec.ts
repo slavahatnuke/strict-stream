@@ -1,7 +1,5 @@
 import {describe, expect, it} from "vitest";
 import {from} from "./from";
-import {toArray} from "./toArray";
-import {reduce} from "./reduce";
 import {run} from "./index";
 
 describe(run.name, () => {
@@ -14,9 +12,7 @@ describe(run.name, () => {
     });
 
     it('returns default value when stream is empty', async () => {
-        const stream = from([
-
-        ])
+        const stream = from([])
         const defaultValue = Symbol('TO_TEST');
         const lastValue = await run(stream, defaultValue);
         expect(lastValue).toEqual(defaultValue)

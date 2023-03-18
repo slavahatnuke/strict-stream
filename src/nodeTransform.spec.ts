@@ -47,6 +47,6 @@ describe(nodeTransform.name, () => {
 
         const strings = bufferChunks.map((chunk: any) => chunk.toString());
 
-        expect(strings).toEqual([ 'Hello + OK' ])
+        expect(strings).toEqual(['Hello + OK'])
     });
 })

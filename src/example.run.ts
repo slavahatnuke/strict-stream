@@ -16,7 +16,7 @@ export async function exampleRun() {
         .pipe(map((x) => parseInt(x)))
         .pipe(map((x) => 200 + x))
         .pipe(map((x) => String(x)))
-        // .pipe(map((x) => ({name: x})))
+    // .pipe(map((x) => ({name: x})))
 
     const x = from(sequence(5))
         .pipe(map((x) => x + 10))

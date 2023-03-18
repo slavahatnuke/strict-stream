@@ -6,7 +6,7 @@ import {toArray} from "./toArray";
 
 describe(nodeWritable.name, () => {
     it('writes', async () => {
-        const written: {chunk: any}[] = []
+        const written: { chunk: any }[] = []
         const myWritable = new Writable({
             write(chunk, encoding: BufferEncoding, callback) {
                 written.push({chunk})

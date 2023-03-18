@@ -9,18 +9,16 @@ describe(flatMap.name, () => {
             [1], // -> 1
             2,  // -> 2
             [33], // -> 33
-            [[44]] // -> [44] only one array should be unwrapped
+            [44] // -> 44 only one array should be unwrapped
         ])
-            .pipe(flatMap((pass) => pass as any));
+            .pipe(flatMap((pass) => pass));
 
 
         expect(await toArray(out)).toEqual([
             1,
             2,
             33,
-            [
-                44
-            ]
+            44
         ])
     });
 

@@ -1,7 +1,6 @@
-import {Promised, StrictStream, StrictStreamMapper} from "./index";
+import {StrictStream, StrictStreamMapper} from "./index";
 import {IRead, read} from "./reader";
-import {Writer, IWriter} from "./writer";
-import {Concurrency, IPublishToConcurrency} from "./fun/concurrency";
+import {IWriter, Writer} from "./writer";
 import {syncTick} from "./fun/tick";
 
 export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
@@ -11,7 +10,7 @@ export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
     let _error: Error | undefined = undefined;
 
     async function finish() {
-        if(outputBuffer) {
+        if (outputBuffer) {
             await outputBuffer.finish()
         }
     }
@@ -33,7 +32,6 @@ export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
                             outputBuffer = Writer<Input>(size)
 
                             syncTick(async () => {
-                                // eslint-disable-next-line no-constant-condition
                                 while (true) {
                                     try {
                                         const inputValue = await readInput();

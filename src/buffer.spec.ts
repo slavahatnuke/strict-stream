@@ -1,7 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {scale} from "./scale";
 import {sequence} from "./sequence";
-import {delay} from "./fun/delay";
 import {of} from "./index";
 import {toArray} from "./toArray";
 import {tap} from "./tap";
