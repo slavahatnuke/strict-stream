@@ -6,11 +6,12 @@ import {filter} from "./filter";
 export async function example() {
   const usersStream =
     from(
-      // gives sequence 0,1,2,3,4; sequence is AsyncIterable<number>
+      // gives sequence 0,1,2,3,4;
+      // sequence is AsyncIterable<number>
       sequence(5)
     )
       .pipe(
-        // takes only 0, 2, 3
+        // takes only 0, 2, 4
         filter((id) => id % 2 === 0)
       )
       .pipe(

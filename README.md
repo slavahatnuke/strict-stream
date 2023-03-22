@@ -17,11 +17,12 @@ import {filter} from "strict-stream/filter";
 export async function example() {
   const usersStream =
     from(
-      // gives sequence 0,1,2,3,4; sequence is AsyncIterable<number>
+      // gives sequence 0,1,2,3,4; 
+      // sequence is AsyncIterable<number>
       sequence(5)
     )
       .pipe(
-        // takes only 0, 2, 3
+        // takes only 0, 2, 4
         filter((id) => id % 2 === 0)
       )
       .pipe(
@@ -42,6 +43,6 @@ export async function example() {
 
 1. There is a `sequence` function that generates a sequence of numbers 0,1,2,3,4. 
 2. This sequence is filtered using the `filter` function to include only the even numbers (i.e., 0, 2, and 4). 
-3. And the resulting sequence is mapped using the `map` function to convert each number into a `user object` with a type, name and id. 
+3. And the resulting sequence is mapped using the `map` function to convert each number into a `user object` with a `type`, `name` and `id`. 
 4. Finally `userStreams` is a strictly typed `AsyncIterable<{type: string, id: number, name: string}>`
 
