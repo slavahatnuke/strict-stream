@@ -4,93 +4,93 @@ import {reader} from "./reader";
 import {flat} from "./flat";
 
 export type IWriter<T> = {
-    stream: StrictStream<T>;
-    write: (data: T) => Promise<void>;
-    finish: () => Promise<void>;
-    length(): number;
+  stream: StrictStream<T>;
+  write: (data: T) => Promise<void>;
+  finish: () => Promise<void>;
+  length(): number;
 };
 
 export function Writer<T>(bufferSize = 1): IWriter<T> {
-    let records: T[] = [];
+  let records: T[] = [];
 
-    let weWaitUntilRecordsConsumed: IDefer<void> | undefined = undefined;
-    let weWaitForRecordsToRead: IDefer<void> | undefined = undefined;
+  let weWaitUntilRecordsConsumed: IDefer<void> | undefined = undefined;
+  let weWaitForRecordsToRead: IDefer<void> | undefined = undefined;
 
-    let finishing = false;
+  let finishing = false;
 
-    const read = async (): Promise<T[] | typeof reader.DONE> => {
-        if (!records.length) {
-            if (finishing) {
-                return reader.DONE;
-            }
+  const read = async (): Promise<T[] | typeof reader.DONE> => {
+    if (!records.length) {
+      if (finishing) {
+        return reader.DONE;
+      }
 
-            if (!weWaitForRecordsToRead) {
-                weWaitForRecordsToRead = Defer<void>();
-            }
+      if (!weWaitForRecordsToRead) {
+        weWaitForRecordsToRead = Defer<void>();
+      }
 
-            // waiting to read
-            await weWaitForRecordsToRead.promise;
-        }
+      // waiting to read
+      await weWaitForRecordsToRead.promise;
+    }
 
-        const currentRecords = [...records];
-        records = [];
+    const currentRecords = [...records];
+    records = [];
 
-        if (weWaitUntilRecordsConsumed) {
-            weWaitUntilRecordsConsumed.resolve();
-            weWaitUntilRecordsConsumed = undefined;
-        }
+    if (weWaitUntilRecordsConsumed) {
+      weWaitUntilRecordsConsumed.resolve();
+      weWaitUntilRecordsConsumed = undefined;
+    }
 
-        if (finishing) {
-            if (currentRecords.length) {
-                return currentRecords;
-            } else {
-                return reader.DONE;
-            }
-        }
-
+    if (finishing) {
+      if (currentRecords.length) {
         return currentRecords;
-    };
+      } else {
+        return reader.DONE;
+      }
+    }
 
-    return {
-        async write(data: T) {
-            if (finishing) {
-                throw new Error(`Buffer is finishing, impossible to write`);
-            }
+    return currentRecords;
+  };
 
-            records.push(data);
+  return {
+    async write(data: T) {
+      if (finishing) {
+        throw new Error(`Buffer is finishing, impossible to write`);
+      }
 
-            if (weWaitForRecordsToRead) {
-                weWaitForRecordsToRead.resolve();
-                weWaitForRecordsToRead = undefined;
-            }
+      records.push(data);
 
-            if (records.length >= bufferSize) {
-                if (!weWaitUntilRecordsConsumed) {
-                    weWaitUntilRecordsConsumed = Defer<void>();
-                }
+      if (weWaitForRecordsToRead) {
+        weWaitForRecordsToRead.resolve();
+        weWaitForRecordsToRead = undefined;
+      }
 
-                await weWaitUntilRecordsConsumed.promise;
-            }
-        },
+      if (records.length >= bufferSize) {
+        if (!weWaitUntilRecordsConsumed) {
+          weWaitUntilRecordsConsumed = Defer<void>();
+        }
 
-        async finish() {
-            finishing = true;
+        await weWaitUntilRecordsConsumed.promise;
+      }
+    },
 
-            if (weWaitForRecordsToRead) {
-                weWaitForRecordsToRead.resolve();
-                weWaitForRecordsToRead = undefined;
-            }
+    async finish() {
+      finishing = true;
 
-            if (weWaitUntilRecordsConsumed) {
-                await weWaitUntilRecordsConsumed.promise;
-                weWaitUntilRecordsConsumed = undefined;
-            }
-        },
+      if (weWaitForRecordsToRead) {
+        weWaitForRecordsToRead.resolve();
+        weWaitForRecordsToRead = undefined;
+      }
 
-        length(): number {
-            return records.length
-        },
+      if (weWaitUntilRecordsConsumed) {
+        await weWaitUntilRecordsConsumed.promise;
+        weWaitUntilRecordsConsumed = undefined;
+      }
+    },
 
-        stream: of(reader(read)).pipe(flat()),
-    };
+    length(): number {
+      return records.length
+    },
+
+    stream: of(reader(read)).pipe(flat()),
+  };
 }

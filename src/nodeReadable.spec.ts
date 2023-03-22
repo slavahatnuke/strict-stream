@@ -5,14 +5,14 @@ import {Readable} from "stream";
 import {nodeReadable} from "./nodeReadable";
 
 describe(nodeReadable.name, () => {
-    it('supports node readable', async () => {
-        const readable = Readable.from('Hello Stream');
+  it('supports node readable', async () => {
+    const readable = Readable.from('Hello Stream');
 
-        const stream = nodeReadable<string>(readable)
-            .pipe(map((chunk) => `${chunk} + OK`))
+    const stream = nodeReadable<string>(readable)
+      .pipe(map((chunk) => `${chunk} + OK`))
 
-        const outputs = await toArray(stream);
+    const outputs = await toArray(stream);
 
-        expect(outputs).toEqual(['Hello Stream + OK'])
-    });
+    expect(outputs).toEqual(['Hello Stream + OK'])
+  });
 })

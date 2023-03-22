@@ -4,19 +4,19 @@ import {from} from "./from";
 import {toArray} from "./toArray";
 
 describe(tap.name, () => {
-    it('does not modify the pipeline', async () => {
+  it('does not modify the pipeline', async () => {
 
-        const collectedValues: number[] = [];
-        const stream = from([1, 2, 3])
-            .pipe(tap(async (value) => {
-                collectedValues.push(value)
-                return 'ANY'
-            }))
+    const collectedValues: number[] = [];
+    const stream = from([1, 2, 3])
+      .pipe(tap(async (value) => {
+        collectedValues.push(value)
+        return 'ANY'
+      }))
 
-        const outputs = await toArray(stream);
+    const outputs = await toArray(stream);
 
 
-        expect(outputs).toEqual([1, 2, 3])
-        expect(collectedValues).toEqual([1, 2, 3])
-    });
+    expect(outputs).toEqual([1, 2, 3])
+    expect(collectedValues).toEqual([1, 2, 3])
+  });
 })

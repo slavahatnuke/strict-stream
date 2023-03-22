@@ -4,128 +4,128 @@ import {describe, expect, it} from "vitest";
 
 describe(Concurrency.name, () => {
 
-    it('concurrency / 2', async function () {
-        const d1 = Date.now();
+  it('concurrency / 2', async function () {
+    const d1 = Date.now();
 
-        let counter = 0;
+    let counter = 0;
 
-        const send = Concurrency<string>(2, async (data) => {
-            await delay(200);
-            counter++;
-            return `echo-${data}`;
-        });
-
-        await send('1');
-        await send('2');
-
-        await send.finish();
-
-        const d2 = Date.now();
-
-        expect(Math.round((d2 - d1) / 200) === 1).toEqual(true);
-        expect(counter).toEqual(2);
+    const send = Concurrency<string>(2, async (data) => {
+      await delay(200);
+      counter++;
+      return `echo-${data}`;
     });
 
-    it('concurrency / 1 & results', async function () {
-        const d1 = Date.now();
+    await send('1');
+    await send('2');
 
-        let counter = 0;
+    await send.finish();
 
-        const send = Concurrency<string>(1, async (data) => {
-            await delay(200);
-            counter++;
-            return `echo-${data}`;
-        });
+    const d2 = Date.now();
 
-        const result1 = await send('1');
-        const result2 = await send('2');
+    expect(Math.round((d2 - d1) / 200) === 1).toEqual(true);
+    expect(counter).toEqual(2);
+  });
 
-        await send.finish();
+  it('concurrency / 1 & results', async function () {
+    const d1 = Date.now();
 
-        const d2 = Date.now();
+    let counter = 0;
 
-        expect(Math.round((d2 - d1) / 200) === 2).toEqual(true);
-        expect(counter).toEqual(2);
-
-        expect(await result1()).toEqual('echo-1');
-        expect(await result2()).toEqual('echo-2');
+    const send = Concurrency<string>(1, async (data) => {
+      await delay(200);
+      counter++;
+      return `echo-${data}`;
     });
 
-    it('concurrency / 2 & 3 messages and back pressure / tested without finishing 3rd message', async function () {
-        const d1 = Date.now();
+    const result1 = await send('1');
+    const result2 = await send('2');
 
-        let counter = 0;
+    await send.finish();
 
-        const send = Concurrency<string>(2, async (data) => {
-            await delay(200);
-            counter++;
-            return `echo-${data}`;
-        });
+    const d2 = Date.now();
 
-        await send('1');
-        await send('2');
-        await send('3'); // back pressured & no finish
+    expect(Math.round((d2 - d1) / 200) === 2).toEqual(true);
+    expect(counter).toEqual(2);
 
-        const d2 = Date.now();
+    expect(await result1()).toEqual('echo-1');
+    expect(await result2()).toEqual('echo-2');
+  });
 
-        expect(Math.round((d2 - d1) / 200) === 1).toEqual(true);
-        expect(counter).toEqual(1);
+  it('concurrency / 2 & 3 messages and back pressure / tested without finishing 3rd message', async function () {
+    const d1 = Date.now();
+
+    let counter = 0;
+
+    const send = Concurrency<string>(2, async (data) => {
+      await delay(200);
+      counter++;
+      return `echo-${data}`;
     });
 
-    it('concurrency / 2 & 3 messages and back pressure', async function () {
-        const d1 = Date.now();
+    await send('1');
+    await send('2');
+    await send('3'); // back pressured & no finish
 
-        let counter = 0;
+    const d2 = Date.now();
 
-        const send = Concurrency<string>(2, async (data) => {
-            counter++;
-            await delay(200);
-            return `echo-${data}`;
-        });
+    expect(Math.round((d2 - d1) / 200) === 1).toEqual(true);
+    expect(counter).toEqual(1);
+  });
 
-        await send('1');
-        await send('2');
-        await send('3'); // back pressured & WITH finish
+  it('concurrency / 2 & 3 messages and back pressure', async function () {
+    const d1 = Date.now();
 
-        await send.finish();
+    let counter = 0;
 
-        const d2 = Date.now();
-
-        expect(Math.round((d2 - d1) / 200) === 2).toEqual(true);
-        expect(counter).toEqual(3);
+    const send = Concurrency<string>(2, async (data) => {
+      counter++;
+      await delay(200);
+      return `echo-${data}`;
     });
 
-    it('concurrency / 2 & 3 messages / quantity and counter', async function () {
-        let counter = 0;
+    await send('1');
+    await send('2');
+    await send('3'); // back pressured & WITH finish
 
-        const send = Concurrency<string>(2, async (data) => {
-            counter++;
-            await delay(200);
-            return `echo-${data}`;
-        });
+    await send.finish();
 
-        send('1'); // uncontrolled
-        send('2'); // uncontrolled
-        send('3'); // uncontrolled
-        send('4'); // uncontrolled
-        send('5'); // uncontrolled
+    const d2 = Date.now();
 
-        expect(send.counter.value()).toEqual(2);
-        expect(send.quantity.value()).toEqual(5);
+    expect(Math.round((d2 - d1) / 200) === 2).toEqual(true);
+    expect(counter).toEqual(3);
+  });
+
+  it('concurrency / 2 & 3 messages / quantity and counter', async function () {
+    let counter = 0;
+
+    const send = Concurrency<string>(2, async (data) => {
+      counter++;
+      await delay(200);
+      return `echo-${data}`;
     });
 
-    it('concurrency / on error', async function () {
-        const send = Concurrency<string>(2, async (data) => {
-            throw new Error('Woop');
-        });
+    send('1'); // uncontrolled
+    send('2'); // uncontrolled
+    send('3'); // uncontrolled
+    send('4'); // uncontrolled
+    send('5'); // uncontrolled
 
-        const resolver1 = await send('1');
-        const resolver2 = await send('2');
+    expect(send.counter.value()).toEqual(2);
+    expect(send.quantity.value()).toEqual(5);
+  });
 
-        await expect(async function () {
-            await Promise.all([resolver1(), resolver2()]);
-        }).rejects.toThrow('Woop');
-
-        await send.finish();
+  it('concurrency / on error', async function () {
+    const send = Concurrency<string>(2, async (data) => {
+      throw new Error('Woop');
     });
+
+    const resolver1 = await send('1');
+    const resolver2 = await send('2');
+
+    await expect(async function () {
+      await Promise.all([resolver1(), resolver2()]);
+    }).rejects.toThrow('Woop');
+
+    await send.finish();
+  });
 })

@@ -8,107 +8,107 @@ import {tap} from "./tap";
 
 describe(scale.name, () => {
 
-    it('scale', async function () {
-        const d1 = Date.now()
-        const out = of(sequence(4))
-            .pipe(
-                scale(1, async (value) => {
-                    await delay(100)
-                    return value
-                })
-            );
+  it('scale', async function () {
+    const d1 = Date.now()
+    const out = of(sequence(4))
+      .pipe(
+        scale(1, async (value) => {
+          await delay(100)
+          return value
+        })
+      );
 
-        const outputs = await toArray(out);
-        const d2 = Date.now()
-
-
-        expect(outputs.sort()).toEqual([0, 1, 2, 3])
-        expect(Math.round((d2 - d1) / 100)).toEqual(4)
-    });
+    const outputs = await toArray(out);
+    const d2 = Date.now()
 
 
-    it('scale 2', async function () {
+    expect(outputs.sort()).toEqual([0, 1, 2, 3])
+    expect(Math.round((d2 - d1) / 100)).toEqual(4)
+  });
 
-        const d1 = Date.now()
-        const out = of(sequence(4))
-            .pipe(
-                scale(2, async (value) => {
-                    await delay(100)
-                    return value
-                })
-            );
-        const outputs = await toArray(out);
 
-        const d2 = Date.now()
+  it('scale 2', async function () {
 
-        expect(outputs.sort()).toEqual([0, 1, 2, 3])
-        expect(Math.round((d2 - d1) / 100)).toEqual(2)
-    });
+    const d1 = Date.now()
+    const out = of(sequence(4))
+      .pipe(
+        scale(2, async (value) => {
+          await delay(100)
+          return value
+        })
+      );
+    const outputs = await toArray(out);
 
-    it('scale 4', async function () {
-        const d1 = Date.now()
+    const d2 = Date.now()
 
-        const out = of(sequence(4))
-            .pipe(
-                scale(4, async (value) => {
-                    await delay(100)
-                    return value
-                })
-            );
-        const outputs = await toArray(out);
+    expect(outputs.sort()).toEqual([0, 1, 2, 3])
+    expect(Math.round((d2 - d1) / 100)).toEqual(2)
+  });
 
-        const d2 = Date.now()
+  it('scale 4', async function () {
+    const d1 = Date.now()
 
-        expect(outputs.sort()).toEqual([0, 1, 2, 3])
-        expect(Math.round((d2 - d1) / 100)).toEqual(1)
-    });
+    const out = of(sequence(4))
+      .pipe(
+        scale(4, async (value) => {
+          await delay(100)
+          return value
+        })
+      );
+    const outputs = await toArray(out);
 
-    it('scale 3', async function () {
-        const d1 = Date.now()
+    const d2 = Date.now()
 
-        const out = of(sequence(4))
-            .pipe(
-                scale(3, async (value) => {
-                    await delay(100)
-                    return value
-                })
-            );
-        const outputs = await toArray(out);
+    expect(outputs.sort()).toEqual([0, 1, 2, 3])
+    expect(Math.round((d2 - d1) / 100)).toEqual(1)
+  });
 
-        const d2 = Date.now()
+  it('scale 3', async function () {
+    const d1 = Date.now()
 
-        expect(outputs.sort()).toEqual([0, 1, 2, 3])
-        expect(Math.round((d2 - d1) / 100)).toEqual(2)
-    });
+    const out = of(sequence(4))
+      .pipe(
+        scale(3, async (value) => {
+          await delay(100)
+          return value
+        })
+      );
+    const outputs = await toArray(out);
 
-    it('scale / error', async function () {
-        await expect(async () => {
-            const out = of(sequence(4))
-                .pipe(
-                    scale(4, async (value) => {
-                        await delay(100)
-                        throw new Error(`Woops`)
-                    })
-                );
+    const d2 = Date.now()
 
-            await toArray(out);
-        }).rejects.toThrow(`Woops`)
-    });
+    expect(outputs.sort()).toEqual([0, 1, 2, 3])
+    expect(Math.round((d2 - d1) / 100)).toEqual(2)
+  });
 
-    it('scale / source / error', async function () {
-        await expect(async () => {
-            const out = of(sequence(4))
-                .pipe(tap(() => {
-                    throw new Error('Source Error')
-                }))
-                .pipe(
-                    scale<number, number>(4, async (value) => {
-                        throw new Error(`Unexpected error`)
-                        return value
-                    }),
-                );
+  it('scale / error', async function () {
+    await expect(async () => {
+      const out = of(sequence(4))
+        .pipe(
+          scale(4, async (value) => {
+            await delay(100)
+            throw new Error(`Woops`)
+          })
+        );
 
-            await toArray(out);
-        }).rejects.toThrow(`Source Error`)
-    });
+      await toArray(out);
+    }).rejects.toThrow(`Woops`)
+  });
+
+  it('scale / source / error', async function () {
+    await expect(async () => {
+      const out = of(sequence(4))
+        .pipe(tap(() => {
+          throw new Error('Source Error')
+        }))
+        .pipe(
+          scale<number, number>(4, async (value) => {
+            throw new Error(`Unexpected error`)
+            return value
+          }),
+        );
+
+      await toArray(out);
+    }).rejects.toThrow(`Source Error`)
+  });
 })

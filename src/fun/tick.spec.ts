@@ -5,47 +5,47 @@ import {delay} from "./delay";
 
 describe(tick.name, () => {
 
-    it('syncTick', async function () {
-        const defer = Defer<boolean>();
-        let ticked = false;
+  it('syncTick', async function () {
+    const defer = Defer<boolean>();
+    let ticked = false;
 
-        syncTick(() => {
-            defer.resolve(true);
-            ticked = true;
-        });
-
-        await defer.promise;
-
-        expect(ticked).toEqual(true);
+    syncTick(() => {
+      defer.resolve(true);
+      ticked = true;
     });
 
-    it('tick', async function () {
-        let ticked = false;
-        const d1 = Date.now();
+    await defer.promise;
 
-        await tick(async () => {
-            await delay(200);
-            ticked = true;
-        });
+    expect(ticked).toEqual(true);
+  });
 
-        const d2 = Date.now();
+  it('tick', async function () {
+    let ticked = false;
+    const d1 = Date.now();
 
-        expect(Math.round((d2 - d1) / 200)).toEqual(1);
-        expect(ticked).toEqual(true);
+    await tick(async () => {
+      await delay(200);
+      ticked = true;
     });
 
-    it('tick error', async function () {
-        let ticked = false;
+    const d2 = Date.now();
 
-        await expect(async () => {
-            await tick(async () => {
-                await delay(200);
-                ticked = true;
-                throw new Error(`woop`);
-            });
-        }).rejects.toThrowError(`woop`);
+    expect(Math.round((d2 - d1) / 200)).toEqual(1);
+    expect(ticked).toEqual(true);
+  });
 
-        expect(ticked).toEqual(true);
-    });
+  it('tick error', async function () {
+    let ticked = false;
+
+    await expect(async () => {
+      await tick(async () => {
+        await delay(200);
+        ticked = true;
+        throw new Error(`woop`);
+      });
+    }).rejects.toThrowError(`woop`);
+
+    expect(ticked).toEqual(true);
+  });
 
 })
