@@ -4,7 +4,6 @@ import {from} from "./from";
 import {filter} from "./filter";
 
 export async function example() {
-  // usersStream is AsyncIterable<{type: string, id: number, name: string}>
   const usersStream =
     from(
       // gives sequence 0,1,2,3,4; sequence is AsyncIterable<number>
@@ -19,6 +18,7 @@ export async function example() {
         map((id) => ({type: 'User', id, name: `User ${id}`}))
       )
 
+  // usersStream is AsyncIterable<{type: string, id: number, name: string}>
   for await (const user of usersStream) {
     console.log(user)
   }

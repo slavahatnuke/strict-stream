@@ -12,6 +12,7 @@ It ensures that the data flowing through a stream conforms to a specific data ty
 import {sequence} from "strict-stream/sequence";
 import {map} from "strict-stream/map";
 import {from} from "strict-stream/from";
+import {filter} from "strict-stream/filter";
 
 export async function example() {
   const usersStream =
