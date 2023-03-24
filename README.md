@@ -1,7 +1,6 @@
-strict-stream
-=============
-[![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml?branch=master) [![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml?branch=master)
+# strict-stream
 
+[![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml?branch=master) [![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg?branch=master)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml?branch=master)
 
 `strict-stream` is a tiny and lightweight library that helps manage strictly/strongly typed streams using `AsyncIterable<Type>` as the core principle to enable strict data pipelines with useful behavior.  
 
@@ -10,7 +9,7 @@ It ensures that the data flowing through a stream conforms to a specific data ty
 Why `Iterable<T>` and `AsyncIterable<T>` Matter
 -----------------------------------------------
 
-In JavaScript and TypeScript, `Iterable<T>` and `AsyncIterable<T>` are two important interfaces that allow you to work with sequences of values. 
+In `JavaScript` and `TypeScript`, `Iterable<T>` and `AsyncIterable<T>` are two important interfaces that allow you to work with sequences of values. 
 
 An `Iterable<T>` is an object that can be iterated over using a `for...of` loop or the `Spread` operator, while an `AsyncIterable<T>` represents a sequence of values that are produced asynchronously, such as through a network request or database query.
 
@@ -307,6 +306,59 @@ await example();
 - the resulting stream is composed with the `myMap` function that transforms each `id` into an object with `id` and `name` properties. 
 - finally, the transformed stream is iterated using a `for await...of` loop.
 
+### `from<Input>(streamLike: StrictStreamLike<Input>): StrictStreamOf<Input>`
+
+The `from` function is used to convert any `iterable` object, whether `synchronous` or `asynchronous`, to a `StrictStream`.
+
+It takes a single argument of type `StrictStreamLike<Input>`, which can be either an `Iterable` or an `AsyncIterable`;
+
+The `from` function returns a `StrictStream` object of type `StrictStreamOf<Input>`, which has a `pipe` method that can be used to transform the `stream`.
+
+`StrictStreamLike<Type>` type means `AsyncIterable<Type> | Iterable<Type> | Type[]`
+
+#### An example
+
+```typescript
+import {from} from "strict-stream/from";
+import {map} from "strict-stream/map";
+
+async function* generateIds() {
+  yield 1
+  yield 2
+  yield 3
+}
+
+async function example() {
+
+  const streamLike1: Iterable<number> = [1, 2, 3];
+  const streamLike2: AsyncIterable<number> = generateIds();  // is equivalent
+
+  // could consume `streamLike1` or `streamLike2`
+  const stream = from(streamLike1)
+    .pipe(
+      map(async (id) => ({id, name: `User ${id}`}))
+    );
+
+  for await (const data of stream) {
+    console.log(`Id: ${data.id}, Name: ${data.name}`);
+  }
+  // Id: 1, Name: User 1
+  // Id: 2, Name: User 2
+  // Id: 3, Name: User 3
+}
+
+await example();
+
+```
+
+- The example demonstrates how to use the `from` function to turn an iterable into a `composable stream`.
+- An asynchronous generator function called `generateIds` is defined that yields the numbers `1, 2, and 3.`
+- `streamLike1` is defined as an array containing the numbers `1, 2, and 3`.
+- `streamLike2` is defined as an `async iterable` that is equivalent to `generateIds`.
+- The `from` function is then used to create a stream from `streamLike1`.
+- This stream is then piped through a `map` function that maps each number to an object containing an `id` and a `name` field.
+- Finally, the resulting stream is consumed using a `for await` loop
+
 ### `tap<Input>(fn: (input: Input) => Promised<any>): StrictStreamMapper<Input, Input>`
 `tap` is a utility function that allows you to perform `side-effects` on each element of a stream without modifying the stream itself. 
 
@@ -531,15 +583,9 @@ await example();
 - The `resulting stream` emits a `single object` with the final value of the counter property, which is `5` in this case. 
 - The `run` function is used to execute the stream and log the final result.
 
-## TODO
-
 
 ### `pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStreamPlumber<In, Out>`
-
-- Returns a function that is a mapper from `In` to `Out`, and is also extended with a `pipe()` method that allows for chaining mappers together.
-- A `StrictStreamMapper` is a function that takes a `StrictStream` of type `In` and returns a new `StrictStream` of type `Out`.
-- A `StrictStreamPlumber` is a type of `StrictStreamMapper` that is extended with the `pipe()` method.
-
+TODO
 
 License
 -------
