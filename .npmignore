@@ -10,3 +10,4 @@
 *.spec.*
 vitest.config.ts
 vitest.cd.config.ts
+/src/readme
