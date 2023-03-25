@@ -1,7 +1,6 @@
 import {describe, it} from "vitest";
 import {of, run} from "../index";
 import {tap} from "../tap";
-import {sequence} from "../sequence";
 
 describe('readme', () => {
   it('run', async function () {

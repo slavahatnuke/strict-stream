@@ -17,7 +17,8 @@ describe('readme', () => {
           tap((value) => console.log(value))
         );
 
-      for await (const value of transformedStream) { /* empty */ }
+      for await (const value of transformedStream) { /* empty */
+      }
       // 1
       // 2
       // 3

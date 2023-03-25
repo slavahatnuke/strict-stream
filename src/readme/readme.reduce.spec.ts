@@ -1,7 +1,6 @@
 import {describe, it} from "vitest";
 import {of, run} from "../index";
 import {sequence} from "../sequence";
-import {filter} from "../filter";
 import {reduce} from "../reduce";
 
 describe('readme', () => {

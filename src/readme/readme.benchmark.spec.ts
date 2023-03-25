@@ -17,7 +17,8 @@ describe('readme', () => {
           )
 
       const startedAt = Date.now()
-      for await (const record of stream) { /* empty */ }
+      for await (const record of stream) { /* empty */
+      }
       const finishedAt = Date.now()
 
       const recordsPerSecond = (size / (finishedAt - startedAt)) * 1000

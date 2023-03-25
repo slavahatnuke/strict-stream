@@ -1,8 +1,7 @@
 import {describe, it} from "vitest";
-import {map} from "../map";
 import {from} from "../from";
 import {concatenate} from "../concatenate";
-import {of, run} from "../index";
+import {run} from "../index";
 import {tap} from "../tap";
 
 describe('readme', () => {
