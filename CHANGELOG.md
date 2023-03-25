@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.18
+
+### Patch Changes
+
+- Cleaned code
+
 ## 1.0.17
 
 ### Patch Changes
