@@ -1,6 +1,6 @@
 {
   "name": "strict-stream",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "strict-stream - strictly / strongly typed stream",
   "main": "./index.js",
   "module": "./index.mjs",

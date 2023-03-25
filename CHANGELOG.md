@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.20
+
+### Patch Changes
+
+- Up
+
 ## 1.0.19
 
 ### Patch Changes
