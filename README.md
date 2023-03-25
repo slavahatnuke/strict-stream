@@ -1119,9 +1119,6 @@ const outputs = await toArray(stream);
 expect(outputs).toEqual([1, 2, 3])
 ```
 
-#### `loop(condition: () => Promised<boolean>): StrictStream<true>`
-Utility stream creator that will be done if condition returns false.
-
 ## License
 
 `strict-stream` is licensed under the **MIT License**.
