@@ -665,6 +665,95 @@ await example();
 - Finally, the `tap` function is used to log each item.
 - When the `example` function is run, the output stream contains each element in the nested arrays and the single value, emitted as separate items in the stream.
 
+### `flatMap<Input, Output>(mapper: (input: Input) => Promised<Output | StrictStreamLike<Output>>): StrictStreamMapper<Input, Output>`
+
+- `flatMap` is a function that `maps each element` of a stream to another stream and `then flattens the first level of resulting stream` of streams into a single stream. 
+- It takes a `mapper` function that `maps the input element`. 
+- The resulting `stream` is then `flat` mapped, meaning that it is flattened so that all elements are emitted in a single stream.
+
+#### An example
+
+```typescript
+import {run} from "strict-stream";
+import {from} from "strict-stream/from";
+import {flatMap} from "strict-stream/flatMap";
+
+async function example() {
+  type User = {
+    id: number;
+    name: string;
+    orders: Order[];
+  };
+
+  type Order = {
+    id: number;
+    product: string;
+    price: number;
+  };
+
+  const users: User[] = [
+    {
+      id: 1,
+      name: "Alice",
+      orders: [
+        {id: 101, product: "Widget A", price: 10.0},
+        {id: 102, product: "Widget B", price: 20.0},
+      ],
+    },
+    {
+      id: 2,
+      name: "Bob",
+      orders: [
+        {id: 201, product: "Widget C", price: 30.0},
+        {id: 202, product: "Widget D", price: 40.0},
+        {id: 203, product: "Widget E", price: 50.0},
+      ],
+    },
+  ];
+
+  async function fetchStreamOfUsers(): Promise<StrictStreamOf<User>> {
+    return from(users);
+  }
+
+  // StrictStreamOf<{userId: number, orderId: number}
+  const stream = (await fetchStreamOfUsers())
+    .pipe(
+      flatMap(async (user) => {
+        return from(user.orders)
+          .pipe(
+            map(
+              async (order) => {
+                return {
+                  userId: user.id,
+                  orderId: order.id,
+                  price: order.price
+                }
+              })
+          )
+      })
+    )
+    .pipe(
+      tap((value) => console.log(value))
+    );
+
+  await run(stream)
+  // { userId: 1, orderId: 101, price: 10 }
+  // { userId: 1, orderId: 102, price: 20 }
+  // { userId: 2, orderId: 201, price: 30 }
+  // { userId: 2, orderId: 202, price: 40 }
+  // { userId: 2, orderId: 203, price: 50 }
+}
+
+await example();
+```
+
+- In the provided example, `flatMap` is used to `flatten` the orders of the `users`. 
+- A stream of `users` is created using the `from` function. 
+- The `flatMap` function is then called on this stream, mapping each user to a stream of orders using the `from` function again. 
+- The resulting `stream of orders` is then `mapped to an object` with the `userId`, `orderId`, and `price` using the `map` function. 
+- Finally, the resulting stream of objects is logged using the `tap` function.
+- When the stream is run using the `run` function, it logs each object in the stream, which contains the `userId`, `orderId`, and `price` for each order.
+
 ### TODO
 ### `pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStreamPlumber<In, Out>`
 TODO
