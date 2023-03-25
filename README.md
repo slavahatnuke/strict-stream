@@ -754,13 +754,11 @@ await example();
 - Finally, the resulting stream of objects is logged using the `tap` function.
 - When the stream is run using the `run` function, it logs each object in the stream, which contains the `userId`, `orderId`, and `price` for each order.
 
-### TODO
 ### `pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStreamPlumber<In, Out>`
 
 - The `pipe` function is used to create `composable behavior` for `StrictStream`s. 
 - It takes a `StrictStreamMapper` as an input, which is a function that transforms a `StrictStream` of one type to a `StrictStream` of another type. 
 - `pipe` then returns a `StrictStreamPlumber`, which is a function that takes a `StrictStream` of the original input type and returns a `StrictStream` of the final output type.
-
 - `pipe` also has a `pipe` method on the returned function, which allows for easy `composition of multiple` `StrictStreamMapper`s. 
 
 
@@ -827,6 +825,54 @@ export function flatMap<Input, Output>(mapper: (input: Input) => Promised<Output
 - Resulting in a new `StrictStreamMapper` that transforms the input values using the `mapper` function. 
 - This transformation may result in an output value or a `StrictStreamLike` object that contains a set of output values.
 - The resulting `StrictStreamMapper` is then piped into the `flat` function, which flattens any `StrictStreamLike` objects into a stream of individual output values.
+
+### `scaleSync<Input, Output>(size: number, mapper: (input: Input) => Promised<Output>): StrictStreamMapper<Input, Output>`
+
+- Basically the `map` function with desired `concurrency` to process records. That keeps the ordering of output stream unchanged.
+- The `scaleSync` function takes two arguments, the first one is a `number` which represents the concurrency, and the second one is a mapper function that maps the `input` to the `output`.
+
+#### An example
+
+```typescript
+import {run, of} from "strict-stream";
+import {scaleSync} from "strict-stream/scaleSync";
+
+async function fetchUserById(id: number) {
+  // some logic to fetch the use
+  return {
+    id,
+    userName: `User ${id}`
+  };
+}
+
+async function getUserIds() {
+  return sequence(3);
+}
+
+async function example() {
+  const usersStream = of(await getUserIds())
+    .pipe(
+      // run's the async queries concurrently, keeps the ordering of output stream unchanged
+      scaleSync(5, async (id) => fetchUserById(id))
+    )
+    .pipe(
+      tap((value) => console.log(value))
+    );
+
+  await run(usersStream)
+  // { id: 0, userName: 'User 0' }
+  // { id: 1, userName: 'User 1' }
+  // { id: 2, userName: 'User 2' }
+}
+
+await example();
+```
+
+- In the example, the `scaleSync` function is used to `fetch user` details for a given set of user ids. 
+- The `fetchUserById` function fetches the user details `asynchronously` for a given `user id`, and the `getUserIds` function `generates a stream` of user ids. 
+- The `usersStream` is created with concurrency of 5, and executing the `fetchUserById` function for each id. 
+- The resulting `user details` are logged to the console using the `tap` function.
+
 
 License
 -------
