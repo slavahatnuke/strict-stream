@@ -9,7 +9,7 @@ describe('readme', () => {
     async function example() {
       const sequenceStream = of(sequence(3))
         .pipe(
-          tap(console.log)
+          tap((value) => console.log(value))
         );
 
       await run(sequenceStream)

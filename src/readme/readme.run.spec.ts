@@ -15,7 +15,7 @@ describe('readme', () => {
 
       const stream = of(generateIds())
         .pipe(
-          tap(console.log)
+          tap((value) => console.log(value))
         );
 
       await run(stream)

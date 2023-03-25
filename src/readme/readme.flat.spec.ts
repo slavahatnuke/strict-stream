@@ -1,17 +1,22 @@
 import {describe, it} from "vitest";
-import {of, run} from "../index";
+import {run} from "../index";
 import {tap} from "../tap";
-import {sequence} from "../sequence";
-import {map} from "../map";
-import {filter} from "../filter";
+import {from} from "../from";
+import {flat} from "../flat";
 
 describe('readme', () => {
-  it('filter', async function () {
+  it('flat', async function () {
 
     async function example() {
-      const stream = of(sequence(3))
+      const stream = from(
+        [
+          [1, 2],
+          [3, 4],
+          5
+        ]
+      )
         .pipe(
-          filter((id) => id > 0)
+          flat()
         )
         .pipe(
           tap((value) => console.log(value))
@@ -20,6 +25,9 @@ describe('readme', () => {
       await run(stream)
       // 1
       // 2
+      // 3
+      // 4
+      // 5
     }
 
     await example();

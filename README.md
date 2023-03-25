@@ -421,7 +421,7 @@ async function example() {
 
   const stream = of(generateIds())
     .pipe(
-      tap(console.log)
+      tap((value) => console.log(value))
     );
 
   await run(stream)
@@ -450,7 +450,7 @@ import {sequence} from "strict-stream/sequence";
 async function example() {
   const sequenceStream = of(sequence(3))
     .pipe(
-      tap(console.log)
+      tap((value) => console.log(value))
     );
 
   await run(sequenceStream)
@@ -494,7 +494,7 @@ async function example() {
       map((id) => id * 2)
     )
     .pipe(
-      tap(console.log)
+      tap((value) => console.log(value))
     );
 
   await run(sequenceStream)
@@ -531,7 +531,7 @@ async function example() {
       filter((id) => id > 0)
     )
     .pipe(
-      tap(console.log)
+      tap((value) => console.log(value))
     );
 
   await run(stream)
@@ -583,7 +583,89 @@ await example();
 - The `resulting stream` emits a `single object` with the final value of the counter property, which is `5` in this case. 
 - The `run` function is used to execute the stream and log the final result.
 
+### `batch<Input>(size: number): StrictStreamMapper<Input, Input[]>`
 
+- `batch` is a function that returns a `mapper` function that takes an `input stream` and emits an array of inputs that are processed in `batches of a given size`.
+- And when the batch reaches the desired size it emits the batch downstream.
+
+#### An example
+
+```typescript
+import {of, run} from "strict-stream";
+import {sequence} from "strict-stream/sequence";
+import {batch} from "strict-stream/batch";
+
+async function example() {
+  const stream = of(sequence(3))
+    .pipe(
+      batch(2)
+    )
+    .pipe(
+      tap((value) => console.log(value))
+    );
+
+  await run(stream)
+  // Output
+  // [ 0, 1 ]
+  // [ 2 ]
+}
+
+await example();
+```
+
+- The example code creates a `sequence` stream of 3 numbers 
+- And pipes it through the `batch` function with a `batch size of 2`. 
+- The resulting stream emits two arrays, 
+- The first with the values `[0, 1]` and the second with the value `[2]`. 
+- The `tap` function is used to log each emitted value to the console.
+
+
+### `flat<Type>(): StrictStreamMapper<Type | StrictStreamLike<Type>, Type>`
+
+- The `flat` function is a `stream transformer` that flattens the first level of stream or an array (`Iterable`). 
+- If the input stream contains arrays or nested streams 
+- the `flat` function will iterate over each element in the array or nested stream and emit it as a separate item in the output stream.
+
+#### An example
+
+```typescript
+import {run} from "strict-stream";
+import {from} from "strict-stream/from";
+import {flat} from "strict-stream/flat";
+import {tap} from "strict-stream/tap";
+
+async function example() {
+  const stream = from(
+    [
+      [1, 2],
+      [3, 4],
+      5
+    ]
+  )
+    .pipe(
+      flat()
+    )
+    .pipe(
+      tap((value) => console.log(value))
+    );
+
+  await run(stream)
+  // 1
+  // 2
+  // 3
+  // 4
+  // 5
+}
+
+await example();
+```
+
+- In the example code, the `from` function is used to create a stream from an array that contains nested arrays and a single value. 
+- The `flat` function is then used to `flatten` the first level of stream so that each element in the nested arrays is emitted as a separate item in the output stream. 
+- Finally, the `tap` function is used to log each item.
+- When the `example` function is run, the output stream contains each element in the nested arrays and the single value, emitted as separate items in the stream.
+
+### TODO
 ### `pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStreamPlumber<In, Out>`
 TODO
 
