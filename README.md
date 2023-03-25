@@ -756,7 +756,77 @@ await example();
 
 ### TODO
 ### `pipe<In, Out>(mapper: StrictStreamMapper<In, Out>): StrictStreamPlumber<In, Out>`
-TODO
+
+- The `pipe` function is used to create `composable behavior` for `StrictStream`s. 
+- It takes a `StrictStreamMapper` as an input, which is a function that transforms a `StrictStream` of one type to a `StrictStream` of another type. 
+- `pipe` then returns a `StrictStreamPlumber`, which is a function that takes a `StrictStream` of the original input type and returns a `StrictStream` of the final output type.
+
+- `pipe` also has a `pipe` method on the returned function, which allows for easy `composition of multiple` `StrictStreamMapper`s. 
+
+
+#### An example
+
+```typescript
+import {run, pipe} from "strict-stream";
+import {from} from "strict-stream/from";
+import {map} from "strict-stream/map";
+
+async function example() {
+  // composable behavior
+  const addFive = pipe(
+    map((input: number) => input + 4)
+  )
+    .pipe(
+      map(async (input) => input + 1)
+    )
+
+  // High order function to manage / compose part of the pipe
+  function multiple(x: number) {
+    return pipe(
+      map(async (value: number) => value * x)
+    );
+  }
+
+  const stream = from([1, 2, 3])
+    .pipe(
+      addFive
+    )
+    .pipe(multiple(2))
+    .pipe(tap((value) => console.log(value)))
+
+  await run(stream)
+  // 12
+  // 14
+  // 16
+}
+
+await example();
+```
+
+- In the `example` function, we create two separate `StrictStreamMapper`s using `pipe`.
+- We then use the `multiple` function to create another `StrictStreamMapper` that `multiplie`s the input value by a `given number`. 
+- We then `compose` these three mappers using `pipe` and use the resulting `StrictStreamPlumber` to create a `stream of numbers`. 
+- Finally, we `run` the `stream` and log each value as it is processed. 
+- The output will be `12, 14, 16`.
+
+#### An example of `flatMap` implementation
+
+There is a composition of `map` and `flat` functions.
+
+```typescript
+export function flatMap<Input, Output>(mapper: (input: Input) => Promised<Output | StrictStreamLike<Output>>): StrictStreamMapper<Input, Output> {
+  return pipe(
+    map(mapper)
+  ).pipe(
+    flat()
+  );
+}
+```
+- The `flatMap` function is implemented using the `pipe` function, which `composes` a set of `StrictStreamMapper` functions into a single `StrictStreamMapper`. 
+- In the implementation of `flatMap`, the `map` function is first applied to the `mapper` argument
+- Resulting in a new `StrictStreamMapper` that transforms the input values using the `mapper` function. 
+- This transformation may result in an output value or a `StrictStreamLike` object that contains a set of output values.
+- The resulting `StrictStreamMapper` is then piped into the `flat` function, which flattens any `StrictStreamLike` objects into a stream of individual output values.
 
 License
 -------
