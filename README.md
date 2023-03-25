@@ -874,6 +874,57 @@ await example();
 - The resulting `user details` are logged to the console using the `tap` function.
 
 
+### `function concatenate<T>(...streams: StrictStream<any>[]): StrictStream<T>`
+- `concatenate` is a function that concatenates multiple streams into a single stream
+- ensuring that the records are read sequentially one by one, and maintains the ordering of the output stream unchanged.
+- The implementation of the function is done using rest parameters to allow for an `arbitrary number of streams to be concatenated`
+
+#### An example
+
+```typescript
+import {run, of} from "strict-stream";
+import {concatenate} from "strict-stream/concatenate";
+import {from} from "strict-stream/from";
+import {tap} from "strict-stream/tap";
+
+async function* generateIds() {
+  yield 10
+  yield 20
+  yield 30
+}
+
+async function example() {
+
+  const streamLike1: Iterable<number> = [1, 2, 3];
+  const streamLike2: AsyncIterable<number> = generateIds();  // is equivalent
+
+  const stream = from(
+    concatenate(
+      from(streamLike1),
+      from(streamLike2),
+    )
+  ).pipe(
+    tap((value) => console.log(value))
+  );
+
+  await run(stream)
+  // 1
+  // 2
+  // 3
+  // 10
+  // 20
+  // 30
+}
+
+await example();
+```
+
+- In the provided example, two stream-likes, one iterable and one async iterable, are concatenated using `concatenate`. 
+- The resulting stream is then converted into a strict stream using the `from` function
+- And a `tap` operation is performed on it to log each record. 
+- Finally, the stream is run using the `run` function, which is a utility function to consume and execute the stream. 
+- The output shows that the resulting stream contains all the records from both input streams in the correct order.
+
 License
 -------
 
