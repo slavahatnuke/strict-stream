@@ -977,16 +977,14 @@ await example();
 - The `tap` operator is used to log the emitted values to the console.
 
 
-## How to consume `AsyncIterable` ?
-
-
-## Beta API
-
 ### Node.JS integration
 #### `nodeReadable<Output>(readable: Readable): StrictStreamOf<Output>`
 Turns readable to `StrictStreamOf`
 
 ```typescript
+import {nodeReadable} from "strict-stream/nodeReadable";
+import {Readable} from "stream";
+
 const readable = Readable.from('Hello Stream');
 
 const stream = nodeReadable<string>(readable)
@@ -997,6 +995,10 @@ const stream = nodeReadable<string>(readable)
 Integrates writable stream
 
 ```typescript
+import {from} from "strict-stream/from";
+import {nodeWritable} from "strict-stream/nodeWritable";
+import {Readable, Writable} from "stream";
+
 const written: { chunk: any }[] = []
 const myWritable = new Writable({
   write(chunk, encoding: BufferEncoding, callback) {
@@ -1009,9 +1011,15 @@ const buffer = Buffer.from([100, 101, 102]);
 const stream = from([buffer])
   .pipe(nodeWritable(myWritable));
 ```
+
 #### `nodeTransform<Input, Output>(transform: Transform, options: ReadableOptions = {}): StrictStreamMapper<Input, Output>`
 Integrates transform stream
+
 ```typescript
+import {from} from "strict-stream/from";
+import {nodeTransform} from "strict-stream/nodeTransform";
+import {Readable, Transform} from "stream";
+
 const myTransform = new Transform({
   transform(chunk: any, encoding, callback) {
     callback(null, `${chunk} + OK`)
@@ -1021,6 +1029,9 @@ const myTransform = new Transform({
 const stream = from(Readable.from('Hello'))
   .pipe(nodeTransform(myTransform));
 ```
+
+
+## Beta API
 
 ### Beta Transformations
 
@@ -1076,7 +1087,7 @@ const out = of(sequence(4))
   );
 ```
 
-### Source Operations
+### Beta Source Operations
 #### `merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>`
 
 Merge streams concurrently. Does not guarantee the ordering. See `concatenate` for ordered streams.
@@ -1111,7 +1122,6 @@ expect(outputs).toEqual([1, 2, 3])
 #### `loop(condition: () => Promised<boolean>): StrictStream<true>`
 Utility stream creator that will be done if condition returns false.
 
-License
--------
+## License
 
 `strict-stream` is licensed under the **MIT License**.
