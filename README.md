@@ -874,7 +874,7 @@ await example();
 - The resulting `user details` are logged to the console using the `tap` function.
 
 
-### `function concatenate<T>(...streams: StrictStream<any>[]): StrictStream<T>`
+### `concatenate<T>(...streams: StrictStream<any>[]): StrictStream<T>`
 - `concatenate` is a function that concatenates multiple streams into a single stream
 - ensuring that the records are read sequentially one by one, and maintains the ordering of the output stream unchanged.
 - The implementation of the function is done using rest parameters to allow for an `arbitrary number of streams to be concatenated`
@@ -924,6 +924,192 @@ await example();
 - And a `tap` operation is performed on it to log each record. 
 - Finally, the stream is run using the `run` function, which is a utility function to consume and execute the stream. 
 - The output shows that the resulting stream contains all the records from both input streams in the correct order.
+
+### `interval(ms: number, startImmediate = false): IInterval`
+
+- `interval` is a function that creates a `stream` that emits a sequence of integers at regular intervals. 
+- It takes two parameters: the `duration` of the interval in `milliseconds`, and a `boolean flag` indicating whether the stream should start emitting `immediately` or after one interval has elapsed.
+- The function returns a `StrictStream` object with an additional method `stop` that can be used to stop the interval stream.
+
+#### An example
+
+```typescript
+import {run, of} from "strict-stream";
+import {tap} from "strict-stream/tap";
+import {map} from "strict-stream/map";
+import {interval} from "strict-stream/interval";
+
+async function example() {
+  // every 300ms
+  const source = interval(300);
+
+  let counter = 0;
+
+  const stream = of(source)
+    .pipe(
+      map(() => {
+        counter++
+
+        if (counter > 3) {
+          // stops the interval stream
+          source.stop()
+        }
+
+        return counter;
+      })
+    )
+    .pipe(
+      tap((value) => console.log(value))
+    )
+
+  await run(stream)
+  // 1
+  // 2
+  // 3
+  // 4
+}
+
+await example();
+```
+ 
+- This example creates an `interval stream` that emits every `300ms`
+- And uses the `map` operator to increment a counter and stop the stream after `4 emissions`. 
+- The `tap` operator is used to log the emitted values to the console.
+
+
+## How to consume `AsyncIterable` ?
+
+
+## Beta API
+
+### Node.JS integration
+#### `nodeReadable<Output>(readable: Readable): StrictStreamOf<Output>`
+Turns readable to `StrictStreamOf`
+
+```typescript
+const readable = Readable.from('Hello Stream');
+
+const stream = nodeReadable<string>(readable)
+  .pipe(map((chunk) => `${chunk} + OK`))
+```
+
+#### `nodeWritable<Type>(writable: Writable, encoding: BufferEncoding = 'utf-8'): StrictStreamMapper<Type, Type>`
+Integrates writable stream
+
+```typescript
+const written: { chunk: any }[] = []
+const myWritable = new Writable({
+  write(chunk, encoding: BufferEncoding, callback) {
+    written.push({chunk})
+    callback()
+  },
+});
+
+const buffer = Buffer.from([100, 101, 102]);
+const stream = from([buffer])
+  .pipe(nodeWritable(myWritable));
+```
+#### `nodeTransform<Input, Output>(transform: Transform, options: ReadableOptions = {}): StrictStreamMapper<Input, Output>`
+Integrates transform stream
+```typescript
+const myTransform = new Transform({
+  transform(chunk: any, encoding, callback) {
+    callback(null, `${chunk} + OK`)
+  },
+});
+
+const stream = from(Readable.from('Hello'))
+  .pipe(nodeTransform(myTransform));
+```
+
+### Beta Transformations
+
+#### `scale<Input, Output>(max: number, mapper: (input: Input) => Promised<Output>): StrictStreamMapper<Input, Output>`
+Maps the stream with `max` concurrently. Does not guarantee the ordering of stream items for sure. See `scaleSync` for the ordered stream.
+```typescript
+const out = of(sequence(4))
+  .pipe(
+    scale(10, async (value) => {
+      return value
+    })
+  );
+```
+#### `batchTimed<Input>(size: number, maxTimeout: Milliseconds): StrictStreamMapper<Input, Input[]>`
+
+Emit batches by `size` or `maxTimeout`; Useful in the `infinity` streams to handle batches.
+
+```typescript
+// batch by timeout
+const stream = of(sequence(5))
+  .pipe(tap(() => {
+    return delay(100)
+  }))
+  .pipe(batchTimed(2, 10));
+```
+
+```typescript
+// batch by timeout
+const stream = of(sequence(5))
+  .pipe(tap(() => {
+    return delay(100)
+  }))
+  .pipe(batchTimed(2, 10));
+```
+
+```typescript
+// batch by size
+const stream = of(sequence(5))
+  .pipe(tap(() => {
+    return delay(10)
+  }))
+  .pipe(batchTimed(2, 500));
+```
+
+#### `buffer<Input>(size: number): StrictStreamMapper<Input, Input>`
+
+Simply adds a bit of buffer to have more room for reader / upstream. 
+
+```typescript
+const out = of(sequence(4))
+  .pipe(
+    buffer(3)
+  );
+```
+
+### Source Operations
+#### `merge<Type>(...streams: StrictStream<any>[]): StrictStream<Type>`
+
+Merge streams concurrently. Does not guarantee the ordering. See `concatenate` for ordered streams.
+
+```typescript
+const usersV1Stream = from([{type: 'userV1', name: 'User Name'}])
+  .pipe(tap(() => delay(100)));
+
+const usersV2Stream = from([{type: 'userV2', firstName: 'User', lastName: 'Name'}]);
+const usersStream = merge(usersV1Stream, usersV2Stream);
+```
+
+#### `objectReader<T extends object | object[]>(read: () => Promised<T | null | undefined | boolean | number>): StrictStream<T>`
+
+Simplifies reading source of objects;
+
+```typescript
+const array = [{id: 1}, {id: 2}]
+const stream = objectReader(() => array.shift());
+```
+
+### Utilities
+#### `toArray<T>(input: StrictStream<T>): Promise<T[]>`
+Not recommended for production usage. Could lead to RAM consumption.
+```typescript
+const stream = from([1, 2, 3]);
+const outputs = await toArray(stream);
+
+expect(outputs).toEqual([1, 2, 3])
+```
+
+#### `loop(condition: () => Promised<boolean>): StrictStream<true>`
+Utility stream creator that will be done if condition returns false.
 
 License
 -------
