@@ -72,6 +72,11 @@ await example();
 - The `pipe` method is then used to apply a `filter` to the `stream`, keeping only the objects where the `age` property is `greater` than `30`.
 - Finally, the resulting stream is iterated over using a `for-await-of` loop. The output shows only the objects where `age` is `greater` than `30`.
 
+
+##### Inferred types and IDE hints
+
+![strict stream usage](https://user-images.githubusercontent.com/302592/227898570-3a120a82-3bf7-4cef-9c5f-8dd1746ade91.gif)
+
 ### A quick look at transformations
 
 ```typescript
