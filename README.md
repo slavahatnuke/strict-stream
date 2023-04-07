@@ -45,6 +45,7 @@ Here's a simple example that demonstrates how to use `strict-stream`:
 
 ```typescript
 import {of} from 'strict-stream';
+import {filter} from 'strict-stream/filter';
 
 async function* generateData() {
   yield {name: 'Alice', age: 30};
@@ -53,9 +54,11 @@ async function* generateData() {
 }
 
 async function example() {
-  // const stream: AsyncIterable<{name: string, age: number}>
+  // AsyncIterable<{name: string, age: number}>
   const stream = of(generateData())
-    .pipe(filter(({age}) => age > 30));
+    .pipe(
+      filter(({age}) => age > 30)
+    );
 
   for await (const data of stream) {
     console.log(`Name: ${data.name}, Age: ${data.age}`);
@@ -89,8 +92,8 @@ async function example() {
   
   const usersStream =
     from(
-      // gives sequence 0,1,2,3,4; 
-      // sequence is AsyncIterable<number>
+      // gives AsyncIterable<number> 
+      // sequence 0,1,2,3,4; 
       sequence(5)
     )
       .pipe(
@@ -99,10 +102,15 @@ async function example() {
       )
       .pipe(
         // maps to {type: string, id: number, name: string}
-        map((id) => ({type: 'User', id, name: `User ${id}`}))
+        map((id) => ({
+          type: 'User', 
+          id, 
+          name: `User ${id}`
+        }))
       )
 
-  // usersStream is AsyncIterable<{type: string, id: number, name: string}>
+  // inferred type
+  // AsyncIterable<{type: string, id: number, name: string}>
   for await (const user of usersStream) {
     console.log(user)
   }
@@ -189,7 +197,7 @@ import {map} from 'strict-stream/map';
 async function example() {
   const array = [1, 2, 3];
 
-  const stream = reader<number>(() => {
+  const stream = reader<number>(async () => {
     const value = array.shift();
     return value !== undefined ? value : reader.DONE;
   });

@@ -1,5 +1,11 @@
 # strict-stream
 
+## 1.0.23
+
+### Patch Changes
+
+- readme
+
 ## 1.0.22
 
 ### Patch Changes

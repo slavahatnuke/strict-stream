@@ -1,0 +1,2 @@
+- https://codebeautify.org/html-to-markdown
+- https://chatgptsplitter.com/
