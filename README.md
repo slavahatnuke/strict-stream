@@ -1,8 +1,7 @@
 # strict-stream
-
 [![CI](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/slavahatnuke/strict-stream/actions/workflows/ci.yml?branch=master) [![CD](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml/badge.svg?branch=master)](https://github.com/slavahatnuke/strict-stream/actions/workflows/cd.yml?branch=master)
 
-`strict-stream` is a tiny and lightweight library that helps manage strictly/strongly typed streams using `AsyncIterable<Type>` as the core principle to enable strict data pipelines with useful behavior.  
+`strict-stream` is a tiny and lightweight library that helps manage `strictly/strongly typed streams` using `AsyncIterable<Type>` as the core principle to enable strict data pipelines with useful behavior.  
 
 It ensures that the data flowing through a stream conforms to a specific data type or structure, which helps catch errors early on, reduce bugs, and make code more reliable and easier to maintain.
 
