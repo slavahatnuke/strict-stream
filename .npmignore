@@ -9,6 +9,6 @@
 /example.run.*
 /**example.run.*
 *.spec.*
-vitest.config.ts
-vitest.cd.config.ts
+vitest.config
+vitest.cd.config
 /readme
