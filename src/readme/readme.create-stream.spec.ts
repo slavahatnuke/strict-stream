@@ -1,12 +1,12 @@
-import {describe, it} from "vitest";
-import {reader} from "../reader";
+import { describe, it } from 'vitest';
+import { reader } from '../reader';
 
 describe('readme', () => {
   it('create-stream / generator', async function () {
     async function* generateData() {
-      yield {name: 'Alice', age: 30};
-      yield {name: 'Bob', age: 40};
-      yield {name: 'Charlie', age: 50};
+      yield { name: 'Alice', age: 30 };
+      yield { name: 'Bob', age: 40 };
+      yield { name: 'Charlie', age: 50 };
     }
 
     async function example() {
@@ -26,10 +26,10 @@ describe('readme', () => {
 
   it('create-stream / reader', async function () {
     async function example() {
-      const array = [1, 2]
+      const array = [1, 2];
       const stream = reader<number>(() => {
         const value = array.shift();
-        return value || reader.DONE
+        return value || reader.DONE;
       });
 
       for await (const id of stream) {
@@ -41,4 +41,4 @@ describe('readme', () => {
 
     await example();
   });
-})
+});

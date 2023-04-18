@@ -1,10 +1,9 @@
-import {describe, expect, it} from "vitest";
-import {syncTick, tick} from "./tick";
-import {Defer} from "./defer";
-import {delay} from "./delay";
+import { describe, expect, it } from 'vitest';
+import { syncTick, tick } from './tick';
+import { Defer } from './defer';
+import { delay } from './delay';
 
 describe(tick.name, () => {
-
   it('syncTick', async function () {
     const defer = Defer<boolean>();
     let ticked = false;
@@ -47,5 +46,4 @@ describe(tick.name, () => {
 
     expect(ticked).toEqual(true);
   });
-
-})
+});

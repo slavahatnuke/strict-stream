@@ -1,11 +1,10 @@
-import {describe, it} from "vitest";
-import {reader} from "../reader";
-import {of} from "../index";
-import {map} from "../map";
+import { describe, it } from 'vitest';
+import { reader } from '../reader';
+import { of } from '../index';
+import { map } from '../map';
 
 describe('readme', () => {
   it('transform stream', async function () {
-
     async function example() {
       const array = [1, 2, 3];
 
@@ -14,10 +13,7 @@ describe('readme', () => {
         return value !== undefined ? value : reader.DONE;
       });
 
-      const transformedStream = of(stream)
-        .pipe(
-          map((value) => value * 2)
-        );
+      const transformedStream = of(stream).pipe(map((value) => value * 2));
 
       for await (const value of transformedStream) {
         console.log(value);
@@ -27,4 +23,4 @@ describe('readme', () => {
 
     await example();
   });
-})
+});

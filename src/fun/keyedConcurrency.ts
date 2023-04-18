@@ -1,4 +1,4 @@
-import {Concurrency, IPublishToConcurrency} from "./concurrency";
+import { Concurrency, IPublishToConcurrency } from './concurrency';
 
 type IKeyType = string | number | undefined;
 type IGetKey<T> = (message: T) => IKeyType | Promise<IKeyType>;
@@ -11,7 +11,7 @@ export function KeyedConcurrency<T>(
   getKey: IGetKey<T>,
   worker: (message: T) => Promise<any>,
   // options
-  {workerConcurrency = 1}: Partial<IKeyedConcurrencyOptions> = {},
+  { workerConcurrency = 1 }: Partial<IKeyedConcurrencyOptions> = {},
 ): IPublishToConcurrency<T> {
   const registry: { [key in string | number]: IPublishToConcurrency<T> } = {};
 

@@ -1,4 +1,4 @@
-import {Defer} from './defer';
+import { Defer } from './defer';
 
 export type ISyncTopic<T> = {
   publish: (message: T) => void;
@@ -52,9 +52,9 @@ export class TopicAggregateError extends Error {
 }
 
 export function Topic<T>({
-                           sequent = false,
-                           reversed = false,
-                         } = {}): ITopic<T> {
+  sequent = false,
+  reversed = false,
+} = {}): ITopic<T> {
   let subscribers: ITopicSubscriber<T>[] = [];
 
   function subscribe(subscriber: (value: T) => void) {

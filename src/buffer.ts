@@ -1,7 +1,7 @@
-import {StrictStream, StrictStreamMapper} from "./index";
-import {IRead, read} from "./reader";
-import {IWriter, Writer} from "./writer";
-import {syncTick} from "./fun/tick";
+import { StrictStream, StrictStreamMapper } from './index';
+import { IRead, read } from './reader';
+import { IWriter, Writer } from './writer';
+import { syncTick } from './fun/tick';
 
 export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
   let outputBuffer: IWriter<Input>;
@@ -11,7 +11,7 @@ export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
 
   async function finish() {
     if (outputBuffer) {
-      await outputBuffer.finish()
+      await outputBuffer.finish();
     }
   }
 
@@ -21,15 +21,15 @@ export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
         return {
           async next(): Promise<IteratorResult<Input>> {
             if (_error) {
-              throw _error
+              throw _error;
             }
 
             if (!readInput) {
-              readInput = read<Input>(inputStream)
+              readInput = read<Input>(inputStream);
             }
 
             if (!outputBuffer) {
-              outputBuffer = Writer<Input>(size)
+              outputBuffer = Writer<Input>(size);
 
               syncTick(async () => {
                 while (true) {
@@ -39,34 +39,34 @@ export function buffer<Input>(size: number): StrictStreamMapper<Input, Input> {
                       await finish();
                       break;
                     } else {
-                      await outputBuffer.write(inputValue)
+                      await outputBuffer.write(inputValue);
                     }
                   } catch (error) {
-                    _error = error as Error
+                    _error = error as Error;
                     await finish();
                   }
                 }
-              })
+              });
             }
 
             if (!readOutput) {
-              readOutput = read<Input>(outputBuffer.stream)
+              readOutput = read<Input>(outputBuffer.stream);
             }
 
             const output = await readOutput();
 
             if (_error) {
-              throw _error
+              throw _error;
             }
 
             if (output === read.DONE) {
-              return {done: true, value: undefined}
+              return { done: true, value: undefined };
             } else {
-              return {done: false, value: output}
+              return { done: false, value: output };
             }
-          }
-        }
-      }
-    }
+          },
+        };
+      },
+    };
   };
 }

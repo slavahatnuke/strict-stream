@@ -1,12 +1,11 @@
-import {describe, it} from "vitest";
-import {of, run} from "../index";
-import {tap} from "../tap";
-import {map} from "../map";
-import {interval} from "../interval";
+import { describe, it } from 'vitest';
+import { of, run } from '../index';
+import { tap } from '../tap';
+import { map } from '../map';
+import { interval } from '../interval';
 
 describe('readme', () => {
   it('interval', async function () {
-
     async function example() {
       // every 300ms
       const source = interval(300);
@@ -16,21 +15,19 @@ describe('readme', () => {
       const stream = of(source)
         .pipe(
           map(() => {
-            counter++
+            counter++;
 
             if (counter > 3) {
               // stops the interval stream
-              source.stop()
+              source.stop();
             }
 
             return counter;
-          })
+          }),
         )
-        .pipe(
-          tap((value) => console.log(value))
-        )
+        .pipe(tap((value) => console.log(value)));
 
-      await run(stream)
+      await run(stream);
       // 1
       // 2
       // 3
@@ -39,4 +36,4 @@ describe('readme', () => {
 
     await example();
   });
-})
+});

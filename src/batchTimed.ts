@@ -1,12 +1,15 @@
-import {StrictStreamMapper} from "./index";
-import {IRead, read} from "./reader";
-import {IWriter, Writer} from "./writer";
-import {syncTick} from "./fun/tick";
-import {clearTimeout} from "timers";
+import { StrictStreamMapper } from './index';
+import { IRead, read } from './reader';
+import { IWriter, Writer } from './writer';
+import { syncTick } from './fun/tick';
+import { clearTimeout } from 'timers';
 
 type Milliseconds = number;
 
-export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): StrictStreamMapper<Input, Input[]> {
+export function batchTimed<Input>(
+  size: number,
+  maxTimeout: Milliseconds,
+): StrictStreamMapper<Input, Input[]> {
   let outputBuffer: IWriter<Input[]>;
   let readInput: IRead<Input>;
   let readOutput: IRead<Input[]>;
@@ -15,9 +18,9 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
   let flushTimeout: any;
 
   async function finish() {
-    await flush()
+    await flush();
     if (outputBuffer) {
-      await outputBuffer.finish()
+      await outputBuffer.finish();
     }
   }
 
@@ -25,16 +28,16 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
     if (outputBuffer) {
       if (batch.length) {
         const currentBatch: Input[] = [...batch];
-        batch = []
-        await outputBuffer.write(currentBatch)
+        batch = [];
+        await outputBuffer.write(currentBatch);
       }
     }
   }
 
   function clearFlushTimeout() {
     if (flushTimeout) {
-      clearTimeout(flushTimeout)
-      flushTimeout = null
+      clearTimeout(flushTimeout);
+      flushTimeout = null;
     }
   }
 
@@ -44,15 +47,15 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
         return {
           async next(): Promise<IteratorResult<Input[]>> {
             if (_error) {
-              throw _error
+              throw _error;
             }
 
             if (!readInput) {
-              readInput = read<Input>(inputStream)
+              readInput = read<Input>(inputStream);
             }
 
             if (!outputBuffer) {
-              outputBuffer = Writer<Input[]>()
+              outputBuffer = Writer<Input[]>();
               syncTick(async () => {
                 while (true) {
                   try {
@@ -63,15 +66,15 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
                       break;
                     } else {
                       // new incoming data
-                      batch.push(inputValue)
+                      batch.push(inputValue);
 
                       clearFlushTimeout();
 
                       flushTimeout = setTimeout(async () => {
                         try {
-                          await flush()
+                          await flush();
                         } catch (error) {
-                          _error = error as Error
+                          _error = error as Error;
                         }
                       }, maxTimeout);
 
@@ -80,31 +83,31 @@ export function batchTimed<Input>(size: number, maxTimeout: Milliseconds): Stric
                       }
                     }
                   } catch (error) {
-                    _error = error as Error
+                    _error = error as Error;
                     await finish();
                   }
                 }
-              })
+              });
             }
 
             if (!readOutput) {
-              readOutput = read<Input[]>(outputBuffer.stream)
+              readOutput = read<Input[]>(outputBuffer.stream);
             }
 
             const output = await readOutput();
 
             if (_error) {
-              throw _error
+              throw _error;
             }
 
             if (output === read.DONE) {
-              return {done: true, value: undefined}
+              return { done: true, value: undefined };
             } else {
-              return {done: false, value: output}
+              return { done: false, value: output };
             }
-          }
-        }
-      }
-    }
+          },
+        };
+      },
+    };
   };
 }

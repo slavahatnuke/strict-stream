@@ -1,25 +1,23 @@
-import {describe, it} from "vitest";
-import {map} from "../map";
-import {from} from "../from";
+import { describe, it } from 'vitest';
+import { map } from '../map';
+import { from } from '../from';
 
 describe('readme', () => {
   it('from', async function () {
     async function* generateIds() {
-      yield 1
-      yield 2
-      yield 3
+      yield 1;
+      yield 2;
+      yield 3;
     }
 
     async function example() {
-
       const streamLike1: Iterable<number> = [1, 2, 3];
-      const streamLike2: AsyncIterable<number> = generateIds();  // is equivalent
+      const streamLike2: AsyncIterable<number> = generateIds(); // is equivalent
 
       // could consume `streamLike1` or `streamLike2`
-      const stream = from(streamLike1)
-        .pipe(
-          map(async (id) => ({id, name: `User ${id}`}))
-        );
+      const stream = from(streamLike1).pipe(
+        map(async (id) => ({ id, name: `User ${id}` })),
+      );
 
       for await (const data of stream) {
         console.log(`Id: ${data.id}, Name: ${data.name}`);
@@ -31,4 +29,4 @@ describe('readme', () => {
 
     await example();
   });
-})
+});

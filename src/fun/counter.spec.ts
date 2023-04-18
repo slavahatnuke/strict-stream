@@ -1,8 +1,7 @@
-import {Counter} from './conter';
-import {describe, expect, it} from "vitest";
+import { Counter } from './conter';
+import { describe, expect, it } from 'vitest';
 
 describe(Counter.name, () => {
-
   it('counter', async function () {
     const counter = Counter();
 
@@ -57,5 +56,4 @@ describe(Counter.name, () => {
     expect(counter.value()).toEqual(1100);
     expect(values).toEqual([1, 2, 1, 11, 9, 0, 100]);
   });
-
-})
+});

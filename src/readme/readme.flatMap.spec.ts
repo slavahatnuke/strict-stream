@@ -1,9 +1,9 @@
-import {describe, it} from "vitest";
-import {run, StrictStreamOf} from "../index";
-import {tap} from "../tap";
-import {from} from "../from";
-import {flatMap} from "../flatMap";
-import {map} from "../map";
+import { describe, it } from 'vitest';
+import { run, StrictStreamOf } from '../index';
+import { tap } from '../tap';
+import { from } from '../from';
+import { flatMap } from '../flatMap';
+import { map } from '../map';
 
 describe('readme', () => {
   it(flatMap.name, async function () {
@@ -23,19 +23,19 @@ describe('readme', () => {
       const users: User[] = [
         {
           id: 1,
-          name: "Alice",
+          name: 'Alice',
           orders: [
-            {id: 101, product: "Widget A", price: 10.0},
-            {id: 102, product: "Widget B", price: 20.0},
+            { id: 101, product: 'Widget A', price: 10.0 },
+            { id: 102, product: 'Widget B', price: 20.0 },
           ],
         },
         {
           id: 2,
-          name: "Bob",
+          name: 'Bob',
           orders: [
-            {id: 201, product: "Widget C", price: 30.0},
-            {id: 202, product: "Widget D", price: 40.0},
-            {id: 203, product: "Widget E", price: 50.0},
+            { id: 201, product: 'Widget C', price: 30.0 },
+            { id: 202, product: 'Widget D', price: 40.0 },
+            { id: 203, product: 'Widget E', price: 50.0 },
           ],
         },
       ];
@@ -48,24 +48,20 @@ describe('readme', () => {
       const stream = (await fetchStreamOfUsers())
         .pipe(
           flatMap(async (user) => {
-            return from(user.orders)
-              .pipe(
-                map(
-                  async (order) => {
-                    return {
-                      userId: user.id,
-                      orderId: order.id,
-                      price: order.price
-                    }
-                  })
-              )
-          })
+            return from(user.orders).pipe(
+              map(async (order) => {
+                return {
+                  userId: user.id,
+                  orderId: order.id,
+                  price: order.price,
+                };
+              }),
+            );
+          }),
         )
-        .pipe(
-          tap((value) => console.log(value))
-        );
+        .pipe(tap((value) => console.log(value)));
 
-      await run(stream)
+      await run(stream);
       // { userId: 1, orderId: 101, price: 10 }
       // { userId: 1, orderId: 102, price: 20 }
       // { userId: 2, orderId: 201, price: 30 }
@@ -75,4 +71,4 @@ describe('readme', () => {
 
     await example();
   });
-})
+});

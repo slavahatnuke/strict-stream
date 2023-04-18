@@ -1,7 +1,7 @@
-import {SyncTopic, Topic, TopicAggregateError, waitForMessage} from './topic';
-import {delay} from './delay';
-import {syncTick, tick} from './tick';
-import {describe, expect, it} from "vitest";
+import { SyncTopic, Topic, TopicAggregateError, waitForMessage } from './topic';
+import { delay } from './delay';
+import { syncTick, tick } from './tick';
+import { describe, expect, it } from 'vitest';
 
 describe(SyncTopic.name, () => {
   it('SyncPub', async function () {
@@ -19,10 +19,9 @@ describe(SyncTopic.name, () => {
 
     expect(values).toEqual(['AAA', 'BBB']);
   });
-})
+});
 
 describe(Topic.name, () => {
-
   it('Topic', async function () {
     const topic = Topic<string>();
 
@@ -43,21 +42,21 @@ describe(Topic.name, () => {
   });
 
   it('Topic / sequent + reversed = false', async function () {
-    const topic = Topic<number>({sequent: true, reversed: false});
+    const topic = Topic<number>({ sequent: true, reversed: false });
 
     const values: { value: number; idx: number }[] = [];
     let idx = 0;
 
     topic.subscribe(async (value) => {
-      values.push({value: value + 10, idx: idx++});
+      values.push({ value: value + 10, idx: idx++ });
     });
 
     topic.subscribe(async (value) => {
-      values.push({value: value + 100, idx: idx++});
+      values.push({ value: value + 100, idx: idx++ });
     });
 
     topic.subscribe(async (value) => {
-      values.push({value: value + 1000, idx: idx++});
+      values.push({ value: value + 1000, idx: idx++ });
     });
 
     await topic.publish(1);
@@ -92,21 +91,21 @@ describe(Topic.name, () => {
   });
 
   it('Topic / sequent + reversed = true', async function () {
-    const topic = Topic<number>({sequent: true, reversed: true});
+    const topic = Topic<number>({ sequent: true, reversed: true });
 
     const values: { value: number; idx: number }[] = [];
     let idx = 0;
 
     topic.subscribe(async function sub1(value) {
-      values.push({value: value + 10, idx: idx++});
+      values.push({ value: value + 10, idx: idx++ });
     });
 
     topic.subscribe(async function sub2(value) {
-      values.push({value: value + 100, idx: idx++});
+      values.push({ value: value + 100, idx: idx++ });
     });
 
     topic.subscribe(async function sub3(value) {
-      values.push({value: value + 1000, idx: idx++});
+      values.push({ value: value + 1000, idx: idx++ });
     });
 
     await topic.publish(1);
@@ -141,13 +140,13 @@ describe(Topic.name, () => {
   });
 
   it('Topic / sequent + error', async function () {
-    const topic = Topic<number>({sequent: true, reversed: true});
+    const topic = Topic<number>({ sequent: true, reversed: true });
 
     const values: { value: number; idx: number }[] = [];
     let idx = 0;
 
     topic.subscribe(async function sub1(value) {
-      values.push({value: value + 10, idx: idx++});
+      values.push({ value: value + 10, idx: idx++ });
     });
 
     topic.subscribe(async function sub2(value) {
@@ -155,7 +154,7 @@ describe(Topic.name, () => {
     });
 
     topic.subscribe(async function sub3(value) {
-      values.push({value: value + 1000, idx: idx++});
+      values.push({ value: value + 1000, idx: idx++ });
     });
 
     expect(async () => {
@@ -164,13 +163,13 @@ describe(Topic.name, () => {
   });
 
   it('Topic / sequent + error', async function () {
-    const topic = Topic<number>({sequent: true, reversed: true});
+    const topic = Topic<number>({ sequent: true, reversed: true });
 
     const values: { value: number; idx: number }[] = [];
     let idx = 0;
 
     topic.subscribe(async function sub1(value) {
-      values.push({value: value + 10, idx: idx++});
+      values.push({ value: value + 10, idx: idx++ });
     });
 
     topic.subscribe(async function sub2(value) {
@@ -268,5 +267,4 @@ describe(Topic.name, () => {
       expect(resolved).toEqual('OK');
     });
   });
-
-})
+});

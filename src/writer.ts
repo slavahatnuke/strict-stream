@@ -1,7 +1,7 @@
-import {Defer, IDefer} from "./fun/defer";
-import {of, StrictStream} from "./index";
-import {reader} from "./reader";
-import {flat} from "./flat";
+import { Defer, IDefer } from './fun/defer';
+import { of, StrictStream } from './index';
+import { reader } from './reader';
+import { flat } from './flat';
 
 export type IWriter<T> = {
   stream: StrictStream<T>;
@@ -88,7 +88,7 @@ export function Writer<T>(bufferSize = 1): IWriter<T> {
     },
 
     length(): number {
-      return records.length
+      return records.length;
     },
 
     stream: of(reader(read)).pipe(flat()),

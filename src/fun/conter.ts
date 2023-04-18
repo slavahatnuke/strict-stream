@@ -1,4 +1,4 @@
-import {ISubscribeTopic, SyncTopic} from './topic';
+import { ISubscribeTopic, SyncTopic } from './topic';
 
 export type ICounter = {
   increment: (n?: number) => number;
@@ -10,7 +10,7 @@ export type ICounter = {
 
 export function Counter(): ICounter {
   const topic = SyncTopic<number>();
-  const {subscribe, publish} = topic;
+  const { subscribe, publish } = topic;
 
   let counter = 0;
 

@@ -15,7 +15,10 @@
     "madge": "^6.0.0",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
-    "vitest": "^0.29.3"
+    "vitest": "^0.29.3",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.3.2"
   },
   "scripts": {
     "test": "npm run test.vitest.run",
@@ -35,8 +38,8 @@
     "build.v2": "tsup src --format cjs,esm --dts",
     "build.v1": "tsc --outDir dist --module commonjs --declaration true",
     "build": "npm run build.v2 && npm run build.v1",
-    "lint": "eslint src --fix",
-    "lint.only": "eslint src"
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint.only": "eslint \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",

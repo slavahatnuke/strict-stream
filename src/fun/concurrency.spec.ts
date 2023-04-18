@@ -1,9 +1,8 @@
-import {Concurrency} from './concurrency';
-import {delay} from './delay';
-import {describe, expect, it} from "vitest";
+import { Concurrency } from './concurrency';
+import { delay } from './delay';
+import { describe, expect, it } from 'vitest';
 
 describe(Concurrency.name, () => {
-
   it('concurrency / 2', async function () {
     const d1 = Date.now();
 
@@ -128,4 +127,4 @@ describe(Concurrency.name, () => {
 
     await send.finish();
   });
-})
+});

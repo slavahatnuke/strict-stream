@@ -1,5 +1,5 @@
-import {Counter} from "./conter";
-import {Defer, IDefer} from "./defer";
+import { Counter } from './conter';
+import { Defer, IDefer } from './defer';
 
 export type IStopKeepConcurrency = () => Promise<void>;
 

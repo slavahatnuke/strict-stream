@@ -1,5 +1,5 @@
-import {waitForMessage} from "./topic";
-import {ICounter} from "./conter";
+import { waitForMessage } from './topic';
+import { ICounter } from './conter';
 
 export async function waitForCounter(
   counter: ICounter,

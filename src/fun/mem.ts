@@ -9,6 +9,6 @@ export function mem<T>(fn: () => T): () => T {
 
     called = true;
     value = fn();
-    return value
-  }
+    return value;
+  };
 }

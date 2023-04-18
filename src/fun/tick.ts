@@ -1,4 +1,4 @@
-import {Defer} from './defer';
+import { Defer } from './defer';
 
 type ITickSyncRunner = () => any;
 type ITickRunner = () => Promise<any> | any;

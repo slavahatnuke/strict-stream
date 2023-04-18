@@ -1,7 +1,6 @@
-import {Counter, ICounter} from './conter';
-import {Defer, IDefer} from './defer';
-import {waitForCounter} from "./waitForCounter";
-
+import { Counter, ICounter } from './conter';
+import { Defer, IDefer } from './defer';
+import { waitForCounter } from './waitForCounter';
 
 export type IConcurrencyResultResolver = () => Promise<any>;
 export type IPublishToConcurrency<T> = ((
@@ -83,4 +82,3 @@ export function Concurrency<Input, Output = any>(
 
   return publish;
 }
-

@@ -1,10 +1,9 @@
-import {describe, expect, it} from "vitest";
-import {Counter} from "./conter";
-import {delay} from "./delay";
-import {waitForCounter} from "./waitForCounter";
+import { describe, expect, it } from 'vitest';
+import { Counter } from './conter';
+import { delay } from './delay';
+import { waitForCounter } from './waitForCounter';
 
 describe(waitForCounter.name, () => {
-
   it('waitForCounter / initial', async function () {
     const counter1 = Counter();
     await waitForCounter(counter1, (counter) => counter.value() <= 0);
@@ -30,5 +29,4 @@ describe(waitForCounter.name, () => {
     expect(counter2.value()).toEqual(0);
     expect(resolved).toEqual(true);
   });
-
-})
+});
