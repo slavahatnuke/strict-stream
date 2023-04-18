@@ -2,6 +2,7 @@
 /.github
 /src
 /.eslintrc.js
+/.prettierrc
 /CHANGELOG.md
 /README.md
 /tsconfig.json
